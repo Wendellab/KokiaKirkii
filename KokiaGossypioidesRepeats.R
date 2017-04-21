@@ -4,6 +4,7 @@ library(ggrepel)
 library(factoextra)
 library(reshape2)
 library(gridExtra)
+library(geomorph)
 
 #############################################
 sessionInfo()
@@ -86,6 +87,55 @@ subfac <- as.factor(subsections[,3])
 png("cotton_outgroup.PCA.direct.annot.png", 5000, 5000, pointsize=12, res=600)
 fviz_pca_ind(cluster.pca, habillage=subfac, pointsize =2, invisible="quali", repel=TRUE, labelsize=3) + theme_minimal() + labs(title = "PCA of raw counts") + theme(axis.text = element_text(size = rel(1.5)), plot.margin=margin(2,2,2,2,"cm"), plot.title=element_text(face="bold", hjust=0.5), axis.title.x = element_text(face="bold", hjust=0.5), axis.title.y = element_text(face="bold", vjust=0.5), legend.position="none") +theme_set(theme_grey(base_size=12))+ scale_color_manual(breaks=c("A1", "A2", "D5","kirkii", "kokia_"), values=c("orchid", "orchid4", "slategrey","blue3", "green3"))
 dev.off()
+
+### Procrustes ANOVA and pairwise tests using complex linear models
+### which species differ from one another in repeats
+### https://groups.google.com/forum/#!topic/geomorph-r-package/8_B2thhxU_o
+
+# set factors for manova tests, same order is the table rows
+facGroup <- as.factor(c("A", "A", "A", "A", "A", "A", "A", "A", "D", "D", "D", "D", "D", "OG", "OG"))
+facSpecies <- as.factor(c("A1", "A1", "A1", "A2", "A2", "A2", "A2", "A2", "D5", "D5", "D5", "D5", "D5", "kirkii", "kokia"))
+
+# procD.lm with data as percent genome size
+species.diff <- advanced.procD.lm(mydata~facSpecies, ~1, groups=~facSpecies)
+
+#Effect sizes (Z)
+#             A1       A2        D5    kirkii     kokia
+#A1     0.000000 0.575608 2.1022526 1.6452576 1.6624025
+#A2     0.575608 0.000000 2.8185505 1.8842304 1.9055143
+#D5     2.102253 2.818551 0.0000000 0.9200665 0.9360889
+#kirkii 1.645258 1.884230 0.9200665 0.0000000 0.3545530
+#kokia  1.662403 1.905514 0.9360889 0.3545530 0.0000000
+
+#P-values
+#          A1    A2    D5 kirkii  kokia
+#A1     1.000 0.758 0.015 0.0260 0.0410
+#A2     0.758 1.000 0.003 0.0010 0.0010
+#D5     0.015 0.003 1.000 0.5520 0.5210
+#kirkii 0.026 0.001 0.552 1.0000 0.7945
+#kokia  0.041 0.001 0.521 0.7945 1.0000
+
+
+# procD.lm with data as raw count data
+mycountdata <- as.matrix(t(ord_table))
+count.diff <- advanced.procD.lm(mycountdata~facSpecies, ~1, groups=~facSpecies)
+
+#Effect sizes (Z)
+#              A1        A2        D5    kirkii     kokia
+#A1     0.0000000 0.6049583 2.2238744 1.6073137 1.6092942
+#A2     0.6049583 0.0000000 2.9822639 1.8773175 1.8776222
+#D5     2.2238744 2.9822639 0.0000000 0.4478466 0.4516000
+#kirkii 1.6073137 1.8773175 0.4478466 0.0000000 0.1240738
+#kokia  1.6092942 1.8776222 0.4516000 0.1240738 0.0000000
+
+#P-values
+#          A1    A2    D5 kirkii kokia
+#A1     1.000 0.646 0.012  0.049 0.063
+#A2     0.646 1.000 0.003  0.002 0.002
+#D5     0.012 0.003 1.000  0.937 0.934
+#kirkii 0.049 0.002 0.937  1.000 0.972
+#kokia  0.063 0.002 0.934  0.972 1.000
+
 
 
 ########### characterize composition ###########
