@@ -233,6 +233,7 @@ chi_table$p.adjust <- p.adjust(chi_table$p.value, method="BH")
 
 ########### relative aging of transposable elements ###########
 
+# see TE_dating_histogram.pl
 
 
 
