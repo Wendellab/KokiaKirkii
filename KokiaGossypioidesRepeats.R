@@ -40,6 +40,8 @@ dev.off()
 
 
 ################### ordination ###################
+### PCoA ###
+
 annot_clust <- read.table("annotated.counts", header = T, row.names=1, sep="\t")
 
 ord_table <- annot_clust[,(3:17)]
@@ -50,7 +52,7 @@ Mb_table <- ord_table*0.0095
 # A1 (G. herbaceum) = 1667 Mb
 # A2 (G. arboreum) = 1689 Mb
 # D5 (G. raimondii) = 880 Mb
-# G. kirkii = K. drynarioides = 587 Mb
+# G. kirkii = K. drynarioides = 587 Mb; sampling = 61,789 reads
 perc_table <- data.frame( lapply(Mb_table[1:3], function(x) x/1667), lapply(Mb_table[4:8], function(x) x/1698), lapply(Mb_table[9:13], function(x) x/880), lapply(Mb_table[14:15], function(x) x/587) )
 
 mydata <- t(perc_table)
