@@ -49,9 +49,9 @@ Mb_table <- ord_table*0.0095
 # 0.0095 multiplier represents # reads (x) * 95nt/read * 1 kb/1000nt * 1Mb/1000kb * 100% = # reads * 0.0095 = # Mb in entire genome for that cluster 
 
 # convert to percent of genome to balance the numbers for ordination
-# A1 (G. herbaceum) = 1667 Mb
-# A2 (G. arboreum) = 1689 Mb
-# D5 (G. raimondii) = 880 Mb
+# A1 (G. herbaceum) = 1667 Mb; sampling = 175474
+# A2 (G. arboreum) = 1689 Mb; sampling = 180063
+# D5 (G. raimondii) = 880 Mb; sampling = 92631
 # G. kirkii = K. drynarioides = 587 Mb; sampling = 61,789 reads
 perc_table <- data.frame( lapply(Mb_table[1:3], function(x) x/1667), lapply(Mb_table[4:8], function(x) x/1698), lapply(Mb_table[9:13], function(x) x/880), lapply(Mb_table[14:15], function(x) x/587) )
 
@@ -93,6 +93,9 @@ dev.off()
 ### Procrustes ANOVA and pairwise tests using complex linear models
 ### which species differ from one another in repeats
 ### https://groups.google.com/forum/#!topic/geomorph-r-package/8_B2thhxU_o
+
+# Adams, D.C., and E. Otarola-Castillo. 2013. geomorph: an R package for the collection and analysis of geometric morphometric shape data. Methods in Ecology and Evolution. 4:393-399.
+# Adams, D.C., M. L. Collyer, A. Kaliontzopoulou, and E. Sherratt. 2016 geomorph: Software for geometric morphometric analyses. R package version 3.0.2 http://cran.r-project.org/web/packages/geomorph/index.html.
 
 # set factors for manova tests, same order is the table rows
 facGroup <- as.factor(c("A", "A", "A", "A", "A", "A", "A", "A", "D", "D", "D", "D", "D", "OG", "OG"))
