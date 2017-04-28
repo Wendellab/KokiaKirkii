@@ -5,6 +5,7 @@ library(factoextra)
 library(reshape2)
 library(gridExtra)
 library(geomorph)
+library(testit)
 
 #############################################
 sessionInfo()
@@ -230,12 +231,20 @@ chi_table$p.adjust <- p.adjust(chi_table$p.value, method="BH")
 # > row.names(chi_table[(chi_table$p.adjust<0.01),])
 #  [1] "CL0002" "CL0005" "CL0017" "CL0050" "CL0066" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0098" "CL0100" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0118" "CL0119" "CL0121"
 # [22] "CL0126" "CL0129" "CL0136" "CL0141" "CL0149" "CL0158" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188" "CL0190" "CL0191" "CL0203" "CL0238" "CL0253" "CL0274"
-# > row.names(chi_table[(chi_table$p.adjust<0.05),])
+p05 <- row.names(chi_table[(chi_table$p.adjust<0.05),])
 #  [1] "CL0002" "CL0005" "CL0010" "CL0017" "CL0050" "CL0060" "CL0066" "CL0069" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0098" "CL0100" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117"
 # [22] "CL0118" "CL0119" "CL0121" "CL0126" "CL0128" "CL0129" "CL0131" "CL0136" "CL0141" "CL0147" "CL0149" "CL0150" "CL0153" "CL0158" "CL0161" "CL0162" "CL0164" "CL0168" "CL0170" "CL0175" "CL0177"
 # [43] "CL0187" "CL0188" "CL0190" "CL0191" "CL0202" "CL0203" "CL0219" "CL0238" "CL0242" "CL0243" "CL0253" "CL0271" "CL0274"
 
+#  clusters with warnings if no p-value simulation
+warnME <- NULL
+for (i in c(1:188)) { assign("last.warning", NULL, envir = baseenv()); ifelse(has_warning(chisq.test(chi_table[i,c(2:3)])), warnME <- c(warnME,(row.names(chi_table)[i])),"") }
+#  [1] "CL0001" "CL0004" "CL0013" "CL0018" "CL0019" "CL0024" "CL0031" "CL0034" "CL0037" "CL0044" "CL0054" "CL0055" "CL0064" "CL0067" "CL0080" "CL0092" "CL0132" "CL0134" "CL0155"
+# [20] "CL0179" "CL0181" "CL0195" "CL0209" "CL0214" "CL0215" "CL0223" "CL0233" "CL0234" "CL0243" "CL0246" "CL0252" "CL0259" "CL0264" "CL0267" "CL0269"
 
+intersect(warnME, p05)
+#  only CL243 overlaps between the warnings and sig diff clusters at p<0.05
+                             
 ########### relative aging of transposable elements ###########
 
 # see TE_dating_histogram.pl
