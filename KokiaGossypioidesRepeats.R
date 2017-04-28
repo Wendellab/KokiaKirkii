@@ -245,6 +245,21 @@ for (i in c(1:188)) { assign("last.warning", NULL, envir = baseenv()); ifelse(ha
 intersect(warnME, p05)
 #  only CL243 overlaps between the warnings and sig diff clusters at p<0.05
                              
+# make a table of only significant clusters and then learn about it 
+sigtable <- chi_table[p05,c(1:3)]
+sigtable$greater <- ifelse(sigtable$kokia_ > sigtable$kirkii, "kokia", ifelse(sigtable$kirkii > sigtable$kokia_, "kirkii", "same"))
+table(sigtable$greater)
+#kirkii  kokia 
+#    22     33 
+
+table(sigtable$Lineage)
+#  *    LTR     LTR/Copia      LTR/Gypsy       non-LTR_retroposon        Unspecified 
+#  2     11         6              34                  1                      1 
+
+                             
+                             
+                             
+                             
 ########### relative aging of transposable elements ###########
 
 # see TE_dating_histogram.pl
