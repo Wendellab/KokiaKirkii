@@ -267,8 +267,18 @@ sum(sigtable$kirkii)*0.0095-sum(sigtable$kokia_)*0.0095
                              
 ########### relative aging of transposable elements ###########
 
-# see TE_dating_histogram.pl
+# see TE_dating_histogram.pl for table generation
 
+ages <- read.table("cluster.ages", header=T, row.names=1, sep="\t")
+
+table(ages$age)
+#  old young 
+#  202    72 
+
+sigages <- merge(sigtable,ages,by="row.names")
+table(sigages$age)
+#  old young 
+#   30    25 
 
 
 
