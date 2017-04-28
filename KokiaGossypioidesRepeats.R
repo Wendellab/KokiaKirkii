@@ -256,8 +256,13 @@ table(sigtable$Lineage)
 #  *    LTR     LTR/Copia      LTR/Gypsy       non-LTR_retroposon        Unspecified 
 #  2     11         6              34                  1                      1 
 
-                             
-                             
+sum(sigtable$kirkii)*0.0095 # 0.0095 is the same factor used above, with the conversion to Mb
+# [1] 70.167
+sum(sigtable$kokia_)*0.0095
+# [1] 67.7825
+sum(sigtable$kirkii)*0.0095-sum(sigtable$kokia_)*0.0095
+# [1] 2.3845
+                            
                              
                              
 ########### relative aging of transposable elements ###########
