@@ -1,0 +1,475 @@
+% Template for PLoS
+% Version 3.0 December 2014
+%
+% To compile to pdf, run:
+% latex plos.template
+% bibtex plos.template
+% latex plos.template
+% latex plos.template
+% dvipdf plos.template
+%
+% % % % % % % % % % % % % % % % % % % % % %
+%
+% -- IMPORTANT NOTE
+%
+% This template contains comments intended 
+% to minimize problems and delays during our production 
+% process. Please follow the template instructions
+% whenever possible.
+%
+% % % % % % % % % % % % % % % % % % % % % % % 
+%
+% Once your paper is accepted for publication, 
+% PLEASE REMOVE ALL TRACKED CHANGES in this file and leave only
+% the final text of your manuscript.
+%
+% There are no restrictions on package use within the LaTeX files except that 
+% no packages listed in the template may be deleted.
+%
+% Please do not include colors or graphics in the text.
+%
+% Please do not create a heading level below \subsection. For 3rd level headings, use \paragraph{}.
+%
+% % % % % % % % % % % % % % % % % % % % % % %
+%
+% -- FIGURES AND TABLES
+%
+% Please include tables/figure captions directly after the paragraph where they are first cited in the text.
+%
+% DO NOT INCLUDE GRAPHICS IN YOUR MANUSCRIPT
+% - Figures should be uploaded separately from your manuscript file. 
+% - Figures generated using LaTeX should be extracted and removed from the PDF before submission. 
+% - Figures containing multiple panels/subfigures must be combined into one image file before submission.
+% See http://www.plosone.org/static/figureGuidelines for PLOS figure guidelines.
+%
+% Tables should be cell-based and may not contain:
+% - tabs/spacing/line breaks within cells to alter layout or alignment
+% - vertically-merged cells (no tabular environments within tabular environments, do not use \multirow)
+% - colors, shading, or graphic objects
+% See http://www.plosone.org/static/figureGuidelines#tables for table guidelines.
+%
+% For tables that exceed the width of the text column, use the adjustwidth environment as illustrated in the example table in text below.
+%
+% % % % % % % % % % % % % % % % % % % % % % % %
+%
+% -- EQUATIONS, MATH SYMBOLS, SUBSCRIPTS, AND SUPERSCRIPTS
+%
+% IMPORTANT
+% Below are a few tips to help format your equations and other special characters according to our specifications. For more tips to help reduce the possibility of formatting errors during conversion, please see our LaTeX guidelines at http://www.plosone.org/static/latexGuidelines
+%
+% Please be sure to include all portions of an equation in the math environment.
+%
+% Do not include text that is not math in the math environment. For example, CO2 will be CO\textsubscript{2}.
+%
+% Please add line breaks to long display equations when possible in order to fit size of the column. 
+%
+% For inline equations, please do not include punctuation (commas, etc) within the math environment unless this is part of the equation.
+%
+% % % % % % % % % % % % % % % % % % % % % % % % 
+%
+% Please contact latex@plos.org with any questions.
+%
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% Use Unicode characters when possible
+\usepackage[utf8]{inputenc}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% fixltx2e package for \textsubscript
+\usepackage{fixltx2e}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% rotating package for sideways tables
+\usepackage{rotating}
+
+% Remove comment for double spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in 
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+
+% Use the PLoS provided BiBTeX style
+\bibliographystyle{plos2009}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% Leave date blank
+\date{}
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\includegraphics[natwidth=1.3in,natheight=0.4in]{PLOSlogo.png}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\sf PLOS}
+
+%% Include all macros below
+
+\newcommand{\lorem}{{\bf LOREM}}
+\newcommand{\ipsum}{{\bf IPSUM}}
+
+%% END MACROS SECTION
+
+
+\begin{document}
+\vspace*{0.35in}
+
+% Title must be 150 characters or less
+\begin{flushleft}
+{\Large
+\textbf\newline{Phylogenomic analysis of an unusual biogeographic disjunction in the cotton tribe (Gossypieae)}
+}
+\newline
+% Insert Author names, affiliations and corresponding author email.
+\\
+Corrinne E Grover\textsuperscript{1},
+Mark A Arick II\textsuperscript{1},
+Justin Conover\textsuperscript{1},
+Adam Thrasher\textsuperscript{1},
+Guanjing Hu\textsuperscript{1},
+William S Sanders\textsuperscript{1},
+Rubab Naqvi\textsuperscript{1},
+Muhammad Farooq\textsuperscript{1},
+Joann Mudge\textsuperscript{1},
+Thiru Ramaraj\textsuperscript{1},
+Joshua A Udall\textsuperscript{1},
+Daniel G Peterson\textsuperscript{1},
+Jodi Scheffler\textsuperscript{1},
+Brian Scheffler\textsuperscript{1},
+Jonathan F Wendel\textsuperscript{1}
+\\
+\bf{1} Affiliation Dept/Program/Center, Institution Name, City, State, Country
+\\
+\bf{2} Affiliation Dept/Program/Center, Institution Name, City, State, Country
+\\
+\bf{3} Affiliation Dept/Program/Center, Institution Name, City, State, Country
+\\
+
+% Insert additional author notes using the symbols described below. Insert symbol callouts after author names as necessary.
+% 
+% Remove or comment out the author notes below if they aren't used.
+%
+* E-mail: Corresponding author@institute.edu
+\end{flushleft}
+% Please keep the abstract below 300 words
+\section*{Abstract}
+
+
+% Please keep the Author Summary between 150 and 200 words
+% Use first person. PLOS ONE authors please skip this step. 
+% Author Summary not valid for PLOS ONE submissions.   
+\section*{Author Summary}
+
+
+\linenumbers
+
+\section*{Introduction}
+One of the intriguing phenomena that characterizes the cotton tribe, Gossypieae,
+is the prevalence of long-distance, trans-oceanic dispersals. The most famous of
+these occur within the cotton genus itself (Gossypium); however, multiple events
+are found throughout the tribe\cite{Dejoode1992} \cite{Fryxell1979}
+\cite{Stephens1958} \cite{Stephens1966} \cite{Wendel1989} \cite{Wendel1992}
+\cite{Wendel1990} \cite{Wendel1990b}\cite{Wendel2003}\cite{Seelanan1997}. The
+sister genera Kokia and Gossypioides both represent a minimum of one such
+oceanic dispersal followed by individual regional speciation. Based on molecular
+divergence estimates derived from both chloroplast and nuclear genes, these
+genera collectively diverged from the cotton genus during the Miocene
+approximately 10-15 million years ago (mya; \cite{Seelanan1997}
+\cite{Cronn2002}), subsequently splitting into individual genera and achieving
+widely dispersed, yet very localized ranges.
+
+Kokia (Malvaceae) is a small Hawaiian endemic genus composed of four species
+that were once widespread, major components of Hawaiian forests, yet are now all
+either endangered, or recently extinct (K. lanceolata Lewton; \cite{Bates1990}
+\cite{Sherwood2014}). Few individuals remain of the two free-living extant
+species, K. kauaiensis (Rock) Degener \& Duvel and K. drynarioides (Seem.)
+Lewton, the latter of which is critically endangered and nearly extinct in the
+wild, while the third endangered species, K. cookei Degener, exists only as a
+maintained graft derived from a single individual (\cite{Service2012}
+\cite{Sherwood2014}). The native region of its sister genus, Gossypioides, is
+located over 15,000 kilometers away in East Africa and Madagascar. The two
+species that comprise the genus, G. kirkii M. Mast. and G. brevilanatum Hoch.
+(East Africa and Madagascar, respectively), are themselves reproductively
+isolated and, with Kokia, are cytologically distinct from the remainder of the
+cotton tribe in that they appear to have experienced an aneuploid reduction in
+chromosome number. Specifically, while most genera in the Gossypieae are based
+on n=13, species in both Kokia and Gossypioides are n=12, likely representing a
+chromosome loss or fusion event. The two species of Gossypioides also are
+cytogenetically distinct, with an unusually long chromosome pair in G.
+brevilanatum \cite{Hutchinson1937} \cite{Hutchinson1943}.
+
+Despite the extensive research on the evolution of Gossypium, these sister
+genera have been grossly understudied, except in serving as phylogenetic
+outgroups for cotton phylogenetic and genomic research \cite{Seelanan1997}
+\cite{Cronn2002}. Genomic resources in both genera are minimal, access to plant
+material is limited, and with the recent exception of a study by Sherwood and
+Morden (2014) on diversity among Kokia species, much of our knowledge regarding
+these genera is decades old \cite{Hutchinson1947} \cite{Seelanan1997}
+\cite{Fryxell1968}.
+
+The history of these genera, however, is intriguing. The current distribution of
+Kokia in the Hawaiian Islands and Gossypioides in East Africa-Madagascar
+necessitates at least one significant trans-oceanic traversal to a relatively
+young island chain that began to emerge only about 3.4 mya, an age approximately
+equivalent to the estimated divergence between Kokia drynarioides and
+Gossypioides kirkii \cite{Seelanan1997} and slightly more recent than the basal
+most divergence in Gossypium. Diversity within Gossypioides is unknown, aside
+from acquisition of reproductive isolation between its sole two species;
+however, diversity in Kokia has been evaluated for the purposes of conservation
+\cite{Sherwood2014}. A remarkable amount of diversity within and among species
+has been detected, particularly given the demographic history of Kokia, which
+includes the original genetic bottleneck of the founder, range expansion, and
+the subsequent bottleneck of habitat loss and the introduction of competitive
+and/or damaging alien species \cite{Sherwood2014}.
+
+Direct comparisons of these genera are limited. Hutchinson (1943) notes that
+successful grafts can be made between Kokia drynarioides and Gossypioides
+kirkii, and their shared chromosomal reduction (n=12) is unique in the tribe.
+Estimates using a small number of nuclear genes suggest that genic distance
+between K. drynarioides and G. kirkii are similar to estimates between basally
+diverged species in Gossypium, i.e., approximately 2\% versus 3\%, although a
+slight increase in replacement site substitutions is observed \cite{Cronn2002}.                                
+
+Here we apply a whole-genome sequencing strategy to understanding the evolution
+and divergence of these two genera, which collectively are the closest relatives
+of the cotton genus  Gossypium. We present the first draft assembly of Kokia
+drynarioides, and compare it to the sequence of Gossypioides kirkii (citation of
+Gk paper). Through genome sequence comparisons, we derive a precise estimate of
+the divergence between these two genera, and provide a foundation for a
+reference sequence to use as a phylogenetic outgroup to Gossypium.
+
+
+
+% You may title this section "Methods" or "Models". 
+% "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
+% authors may use "Analysis" 
+\section*{Materials and Methods}
+\subsection*{Sequencing and genome assembly}
+
+DNA was extracted from mature leaves using the Qiagen Plant DNeasy kit (Qiagen).
+350Bp and 550 bp Illumina PCR Free libraries were made and sequenced on 2 Miseq
+flowcells and 1 Hiseq 2000 lane at the IGBB. The data were trimmed and filtered
+with Trimmomatic v0.32 \cite{Bolger2014} with the following options: (1)
+sequence adapter removal, (2) removal of leading and/or trailing bases when the
+quality score (Q) <28, (3) removal of bases after average Q <28 (8 nt window) or
+single base quality <10, and (4) removal of reads <85 nt.
+
+RNA was extracted .... MEGAHIT commit:02102e1 \cite{Li2015} was used to assemble
+the RNA data into transcripts.
+
+The trimmed DNA data and RNA assembly were assembled via ABySS v2.0.1
+\cite{Simpson2009}, using every 5th kmer value from 65 through 200. The assembly
+with the highest E-size \cite{Salzberg2012} was used in further analyses. Next
+the selected assembly was further scaffolded with ABySS using the assembled
+transcripts. ABySS Sealer v2.0.1 \cite{Paulino2015} was used to fill gaps in the
+scaffolded assembly. For each trimmed PCR Free library, Sealer was run with
+every 10th kmer starting at 100 and decreasing to 30. Pilon v1.22
+\cite{Walker2014} polished the resulting gap-filled assembly using all the
+trimmed DNA data.
+
+
+\subsection*{Genome annotation}
+
+Several programs were used to generate input for MAKER (v2.31.6) [2] . Trinity
+(v2.2.0) [1] was used to create an RNASeq-assembly that was passed to MAKER as
+ESTs. The genome was filtered to remove sequences less than 1kb. With the
+filtered genome, Genemark (v4.3.3) [3] was used to generate gene predictions and
+BUSCO (v2) [4] was used to train Augustus and create a Snap model. The first
+pass of MAKER was run using the output from Genemark, the Snap model created
+from BUSCO's output, the Augustus [5] model trained by BUSCO, the
+RNASeq-assembly from Trinity as ESTs, and UniProt as a protein database.
+
+After the first pass of MAKER was complete, the annotations generated by MAKER
+were passed to autoAug.pl, a script included with Augustus that trains Augustus.
+These annotations were also used to generate a second Snap model. MAKER was run
+again, replacing the Snap model and Augustus model from BUSCO with the models
+generated from the output of the first pass of MAKER.
+
+\subsection*{Identification of Orthologs}
+
+Amino acid sequences from G. kirkii, G. raimondii and K. drynarioides were
+clustered using OrthoFinder v1.1.41 \cite{Emms2015}, which utilizes a Markov
+clustering algorithm of normalized BLASTp scores to infer homology between
+proteins sequences of different species. OrthoFinder is similar to OrthoMCL2
+\cite{Li2003}, but reduces the number of BLAST results by filtering scores
+based on reciprocal best hits (RBHs) and corrects for gene length biases and
+floor-limitation of e-values in BLAST scores prior to clustering. These
+corrections have been shown to increases precision by improved clustering of
+singletons (i.e., groups in which only one gene from each species is present)
+instead of entire gene families into a given orthologous group. Default values
+were used for the inflation parameter (1.5) in the Markov clustering, and the
+“–og” flag was used to prevent downstream analyses after the groups were
+generated.
+
+
+\subsection*{dN/dS Estimation and Timing of Divergence}
+
+Singletons inferred from OrthoFinder were separated into all 3 possible pairwise
+groups (Gr + Gk, Gr + Kd, Kd + Gk). Amino acid sequences from each pairwise
+group were then aligned using the pairwise2 python package and the BLOSUM62
+substitution matrix. The highest scoring alignments were then used as a guide to
+codon-align the CDS sequences. The CODEML package in PAML \cite{Yang2007} was
+used to calculate the dN, dS, and dN/dS values. Singletons in which any pairwise
+comparison resulted in a dS value greater than 0.03 was removed from the
+analysis and inferred to be a cluster of non-orthologous proteins. Distributions
+of all pairwise dN, dS, and dN/dS values were then plotted, and mean value and
+standard deviation is reported. Estimates of total divergence time between each
+pairwise group was calculated using the equation T=dS/(2r) where r is the
+absolute rate of synonymous substitutions of Adh genes in palms (2.6 X 10-9
+substitutions X substitution site-1 X year-1) \cite{Cronn2002} \cite{Morton1996}
+or members of Brassicaceae (1.5 X 10-8 substitutions X synonymous site-1 X
+year-1) \cite{Koch2000}.
+
+
+\subsection*{Copy Number Variation Estimation}
+A custom Python script (https://github.com/Wendellab/KokiaKirkii) was used to
+calculate lineage-specific gene losses and duplications as inferred by
+OrthoFinder. A gene loss was defined as an orthologous group in which 2 species
+had the same number of genes present (n), but the third species contained n-1
+genes. Likewise, a gene duplication was identified by 2 species containing n
+genes, while the third contained n+1.
+
+
+\subsection*{Repeat clustering and annotation}
+All reads from one of the paired-end files (i.e., R1) were filtered for quality
+and trimmed to a standard 95nt using Trimmomatic version 0.33 \cite{Bolger2014}
+as per (https://github.com/Wendellab/KokiaKirkii). Surviving reads were randomly
+subsampled to represent a 1\% genome size equivalent for each genome
+\cite{Hendrix2005} \cite{Wendel2002} and combined as input into the
+RepeatExplorer pipeline \cite{Novak2013} \cite{Novak2010}, which is designed to
+cluster reads based on similarity and identify putative repetitive sequences
+using low-coverage, small read sequencing. Clusters containing a minimum of
+0.01\% of the total input sequences (i.e., 201 reads from a total input of
+2,013,469 reads) were annotated by the RepeatExplorer implementation of
+RepeatMasker \cite{Smit2015} using a custom library derived from a combination
+of Repbase version WHATEVER \cite{Bao2015} and previously annotated cotton
+repeats \cite{Paterson2012} \cite{Grover2008} \cite{Grover2007}
+\cite{Grover2004} \cite{Hawkins2006}. A cutoff of 0.01\% read representation is
+common; however, we evaluated the suitability of this cut using a log of
+diminishing returns (FIGURE WHATEVER; https://github.com/Wendellab/KokiaKirkii).
+
+Within the annotated clusters, the number of megabases (Mb) attributable to that
+cluster (i.e., element type) for each genome/accession was calculated based on
+the 1\% genome representation of the sample and the standardized read length of
+95 nt; total repetitive amounts for each broad repetitive classification were
+summed from these results. The genome occupation of each cluster (i.e., the
+calculated number of Mb) was normalized by genome size for each accession,
+resulting in the percent of each genome occupied by that element type, for use
+in multivariate visualization (i.e., Principle Coordinate Analysis and Principal
+Component Analysis). All analyses were conducted in R \cite{R2017}; R versions
+and scripts are available at (https://github.com/Wendellab/KokiaKirkii).
+
+\subsection*{Repeat heterogeneity and relative age}
+Relative cluster age was approximated using the among-read divergence profile of
+each cluster, as previously used for Fritillaria \cite{Kelly2015} and dandelion
+\cite{Ferreira2016}. Briefly, an all-versus-all BLASTn \cite{Boratyn2013}
+\cite{Altshul1990} was conducted on a cluster-by-cluster basis using the same
+BLAST parameters implemented in RepeatExplorer. A histogram of pairwise percent
+identity was generated for each cluster and the trend (i.e., biased toward
+high-identity, “young” or lower-identity, “older” element reads) was described
+for each via regression models using R. Specifically, two regression models were
+used to describe the data as either linear ($Y = a + bX$) or quadratic
+($Y = a + bX + cX^2$), and the model with the highest confidence was determined
+via Bayesian Information Criterion \cite{Schwarz1978}. The read similarity
+profile for each cluster was automatically evaluated for each histogram to
+determine if the reads trend toward highly similar “young” or more divergent
+“older” reads, as per (Julie paper) with an additional category. These
+categories include (1) positive linear regression; (2) absence of linear
+regression; (3) negative linear regression; (4) positive quadratic vertical
+parabola, trend described by right-side of vertex; (4b) positive quadratic
+vertical parabola, trend described by left-side of vertex; (5) negative
+quadratic vertical parabola, trend described by right-side of vertex; and (6)
+negative quadratic vertical parabola, trend described by left-side of vertex and
+vertex at >99\% pairwise-identity (Figure WHATEVER). Categories which trend
+toward highly identical reads (i.e., 1, 4, and 6) were interpreted as having
+relatively young membership, whereas categories which trend toward lower
+identity (i.e., 2, 3, 4b, and 5) were interpreted as being composed of older
+elements. As with Ferreira de Carvalho (2016), this regression simply provides a
+relative characterization of cluster/element age and is not designed to detect
+statistically significant differences.
+
+\subsection*{Repetitive profiles between Kokia drynarioides and Gossypioides kirkii}
+Comparison of abundance  for the annotated clusters in Kokia drynarioides and
+Gossypioides kirkii were visualized via ggplot \cite{Wickham2016}, including a
+1:1 ratio line to indicate the expected relationship between K. drynarioides and
+G. kirkii cluster sizes if their repetitive profiles had remained static
+post-divergence. Differential abundance (in read counts) between K. drynarioides
+and G. kirkii for each cluster was evaluated via two-sample chi2 tests; all
+p-values were subject to Benjamini-Hochberg correction for multiple testing
+\cite{Benjamini2001}.
+
+
+% Results and Discussion can be combined.
+\section*{Results}
+
+\section*{Discussion}
+
+\section*{Supporting Information}
+
+% Include only the SI item label in the subsection heading. Use the \nameref{label} command to cite SI items in the text.
+\subsection*{S1 Video}
+\label{S1_Video}
+{\bf Bold the first sentence.}  Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+
+\subsection*{S1 Text}
+\label{S1_Text}
+{\bf Lorem Ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+
+\subsection*{S1 Fig}
+\label{S1_Fig}
+{\bf Lorem Ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+
+\subsection*{S1 Table}
+\label{S1_Table}
+{\bf Lorem Ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+
+% Do NOT remove this, even if you are not including acknowledgments.
+\section*{Acknowledgments}
+Cras egestas velit mauris, eu mollis turpis pellentesque sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam id pretium nisi. Sed ac quam id nisi malesuada congue. Sed interdum aliquet augue, at pellentesque quam rhoncus vitae.
+
+\nolinenumbers
+
+
+\bibliography{kokia}{}
+
+\end{document}
+
