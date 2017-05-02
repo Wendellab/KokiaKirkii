@@ -72,7 +72,27 @@
 % % % % % % % % % % % % % % % % % % % % % % % %
 
 \documentclass[10pt,letterpaper]{article}
-\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+% \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% Modifications for comments
+% \usepackage[paperwidth=275.9mm, paperheight=279.4mm]{geometry} %regular letter size is 215.9 wide by 279.44 long
+% \setlength{\evensidemargin}{95mm}
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\usepackage[markup=underlined]{changes}
+
+\definechangesauthor[color=BrickRed]{Corrinne}
+\definechangesauthor[color=NavyBlue]{Justin}
+%%% Alternative definition to have the remarks
+%%% in the margins instead of footnotes
+\usepackage{todonotes}
+\setlength{\marginparwidth}{3cm}
+\makeatletter
+\setremarkmarkup{\todo[color=Changes@Color#1!20,size=\scriptsize]{#1: #2}}
+\makeatother
+
+%% Rather hacky definition of a plain remark/note
+%% by riding on \added
+\newcommand{\note}[2][]{\added[id=#1,remark={#2}]{}}
 
 % Use adjustwidth environment to exceed column width (see example table in text)
 \usepackage{changepage}
@@ -96,7 +116,7 @@
 \usepackage{nameref,hyperref}
 
 % line numbers
-\usepackage[right]{lineno}
+\usepackage[left]{lineno}
 
 % ligatures disabled
 \usepackage{microtype}
@@ -120,7 +140,7 @@
 \usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
 
 % Use the PLoS provided BiBTeX style
-\bibliographystyle{plos2009}
+\bibliographystyle{plos2009} 
 
 % Remove brackets from numbering in List of References
 \makeatletter
@@ -131,21 +151,18 @@
 \date{}
 
 % Header and Footer with logo
-\usepackage{lastpage,fancyhdr,graphicx}
-\pagestyle{myheadings}
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{\includegraphics[natwidth=1.3in,natheight=0.4in]{PLOSlogo.png}}
-\rfoot{\thepage/\pageref{LastPage}}
-\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
-\fancyheadoffset[L]{2.25in}
-\fancyfootoffset[L]{2.25in}
-\lfoot{\sf PLOS}
+% \usepackage{lastpage,fancyhdr,graphicx}
+% \pagestyle{myheadings}
+% \pagestyle{fancy}
+% \fancyhf{}
+% \lhead{\includegraphics[natwidth=1.3in,natheight=0.4in]{PLOSlogo.png}}
+% \rfoot{\thepage/\pageref{LastPage}}
+% \renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+% \fancyheadoffset[L]{2.25in}
+% \fancyfootoffset[L]{2.25in}
+% \lfoot{\sf PLOS}
 
 %% Include all macros below
-
-\newcommand{\lorem}{{\bf LOREM}}
-\newcommand{\ipsum}{{\bf IPSUM}}
 
 %% END MACROS SECTION
 
@@ -203,48 +220,47 @@ Jonathan F Wendel\textsuperscript{1}
 \linenumbers
 
 \section*{Introduction}
+
 One of the intriguing phenomena that characterizes the cotton tribe, Gossypieae,
 is the prevalence of long-distance, trans-oceanic dispersals. The most famous of
 these occur within the cotton genus itself (Gossypium); however, multiple events
-are found throughout the tribe\cite{Dejoode1992} \cite{Fryxell1979}
-\cite{Stephens1958} \cite{Stephens1966} \cite{Wendel1989} \cite{Wendel1992}
-\cite{Wendel1990} \cite{Wendel1990b}\cite{Wendel2003}\cite{Seelanan1997}. The
-sister genera Kokia and Gossypioides both represent a minimum of one such
-oceanic dispersal followed by individual regional speciation. Based on molecular
-divergence estimates derived from both chloroplast and nuclear genes, these
-genera collectively diverged from the cotton genus during the Miocene
-approximately 10-15 million years ago (mya; \cite{Seelanan1997}
-\cite{Cronn2002}), subsequently splitting into individual genera and achieving
-widely dispersed, yet very localized ranges.
+are found throughout the tribe\cite{Dejoode1992, Fryxell1979, Stephens1958,
+  Stephens1966, Wendel1989, Wendel1992, Wendel1990, Wendel1990b, Wendel2003,
+  Seelanan1997}. The sister genera Kokia and Gossypioides both represent a
+minimum of one such oceanic dispersal followed by individual regional
+speciation. Based on molecular divergence estimates derived from both
+chloroplast and nuclear genes, these genera collectively diverged from the
+cotton genus during the Miocene approximately 10-15 million years ago (mya;
+\cite{Seelanan1997, Cronn2002}), subsequently splitting into individual genera
+and achieving widely dispersed, yet very localized ranges.
 
 Kokia (Malvaceae) is a small Hawaiian endemic genus composed of four species
 that were once widespread, major components of Hawaiian forests, yet are now all
-either endangered, or recently extinct (K. lanceolata Lewton; \cite{Bates1990}
-\cite{Sherwood2014}). Few individuals remain of the two free-living extant
-species, K. kauaiensis (Rock) Degener \& Duvel and K. drynarioides (Seem.)
-Lewton, the latter of which is critically endangered and nearly extinct in the
-wild, while the third endangered species, K. cookei Degener, exists only as a
-maintained graft derived from a single individual (\cite{Service2012}
-\cite{Sherwood2014}). The native region of its sister genus, Gossypioides, is
-located over 15,000 kilometers away in East Africa and Madagascar. The two
-species that comprise the genus, G. kirkii M. Mast. and G. brevilanatum Hoch.
-(East Africa and Madagascar, respectively), are themselves reproductively
-isolated and, with Kokia, are cytologically distinct from the remainder of the
-cotton tribe in that they appear to have experienced an aneuploid reduction in
-chromosome number. Specifically, while most genera in the Gossypieae are based
-on n=13, species in both Kokia and Gossypioides are n=12, likely representing a
-chromosome loss or fusion event. The two species of Gossypioides also are
-cytogenetically distinct, with an unusually long chromosome pair in G.
-brevilanatum \cite{Hutchinson1937} \cite{Hutchinson1943}.
+either endangered, or recently extinct (K. lanceolata Lewton; \cite{Bates1990,
+  Sherwood2014}). Few individuals remain of the two free-living extant species,
+K. kauaiensis (Rock) Degener \& Duvel and K. drynarioides (Seem.) Lewton, the
+latter of which is critically endangered and nearly extinct in the wild, while
+the third endangered species, K. cookei Degener, exists only as a maintained
+graft derived from a single individual (\cite{Service2012, Sherwood2014}). The
+native region of its sister genus, Gossypioides, is located over 15,000
+kilometers away in East Africa and Madagascar. The two species that comprise the
+genus, G. kirkii M. Mast. and G. brevilanatum Hoch. (East Africa and Madagascar,
+respectively), are themselves reproductively isolated and, with Kokia, are
+cytologically distinct from the remainder of the cotton tribe in that they
+appear to have experienced an aneuploid reduction in chromosome number.
+Specifically, while most genera in the Gossypieae are based on n=13, species in
+both Kokia and Gossypioides are n=12, likely representing a chromosome loss or
+fusion event. The two species of Gossypioides also are cytogenetically distinct,
+with an unusually long chromosome pair in G. brevilanatum \cite{Hutchinson1937,
+  Hutchinson1943}.
 
 Despite the extensive research on the evolution of Gossypium, these sister
 genera have been grossly understudied, except in serving as phylogenetic
-outgroups for cotton phylogenetic and genomic research \cite{Seelanan1997}
-\cite{Cronn2002}. Genomic resources in both genera are minimal, access to plant
+outgroups for cotton phylogenetic and genomic research \cite{Seelanan1997,
+  Cronn2002}. Genomic resources in both genera are minimal, access to plant
 material is limited, and with the recent exception of a study by Sherwood and
 Morden (2014) on diversity among Kokia species, much of our knowledge regarding
-these genera is decades old \cite{Hutchinson1947} \cite{Seelanan1997}
-\cite{Fryxell1968}.
+these genera is decades old \cite{Hutchinson1947, Seelanan1997, Fryxell1968}.
 
 The history of these genera, however, is intriguing. The current distribution of
 Kokia in the Hawaiian Islands and Gossypioides in East Africa-Madagascar
@@ -285,33 +301,55 @@ reference sequence to use as a phylogenetic outgroup to Gossypium.
 \section*{Materials and Methods}
 \subsection*{Kokia drynarioides sequencing and genome assembly}
 
-DNA was extracted from mature leaves using the Qiagen Plant DNeasy kit (Qiagen). Total genomic DNA was independently sheared via HOW into two average sizes, i.e., 350bp and 550bp, for Illumina library construction. A single, independent libraries was constructed from each fragment pool using the Illumina PCR-free library construction kit (Illumina). The 350 bp library was sequenced on a single lane of Illumina HiSeq2000 and the larger, 550bp library was sequenced on two MiSeq flowcells (both at IGBB, Mississippi State University). 
+DNA was extracted from mature leaves using the Qiagen Plant DNeasy kit (Qiagen).
+Total genomic DNA was independently sheared via HOW into two average sizes,
+i.e., 350bp and 550bp, for Illumina library construction. A single, independent
+libraries was constructed from each fragment pool using the Illumina PCR-free
+library construction kit (Illumina). The 350 bp library was sequenced on a
+single lane of Illumina HiSeq2000 and the larger, 550bp library was sequenced on
+two MiSeq flowcells (both at IGBB, Mississippi State University).
 
-The data were trimmed and filtered with Trimmomatic v0.32 \cite{Bolger2014} with the following options: (1)
-sequence adapter removal, (2) removal of leading and/or trailing bases when the
-quality score (Q) <28, (3) removal of bases after average Q <28 (8 nt window) or
-single base quality <10, and (4) removal of reads <85 nt.
+The data were trimmed and filtered with Trimmomatic v0.32 \cite{Bolger2014} with
+the following options: (1) sequence adapter removal, (2) removal of leading
+and/or trailing bases when the quality score (Q) \textless 28, (3) removal of
+bases after average Q \textless 28 (8 nt window) or single base quality
+\textless 10, and (4) removal of reads \textless 85 nt.
 
-RNA was extracted .... MEGAHIT commit:02102e1 \cite{Li2015} was used to assemble
+RNA was extracted \ldots. MEGAHIT commit:02102e1 \cite{Li2015} was used to assemble
 the RNA data into transcripts.
 
 The trimmed DNA data and RNA assembly were assembled via ABySS v2.0.1
 \cite{Simpson2009}, using every 5th kmer value from 65 through 200. The assembly
-with the highest E-size \cite{Salzberg2012} was retained for improvement and analysis. Each retained 
-assembly was further scaffolded with ABySS using the MEGAHIT-derived 
-transcripts. ABySS Sealer v2.0.1 \cite{Paulino2015} was used to fill gaps in the
-scaffolded assembly using 
-every 10th kmer starting at 100 and decreasing to 30. Pilon v1.22
-\cite{Walker2014} polished the resulting gap-filled assembly using all 
-trimmed DNA data. (Let's get this all into github)
+with the highest E-size \cite{Salzberg2012} was retained for improvement and
+analysis. Each retained assembly was further scaffolded with ABySS using the
+MEGAHIT-derived transcripts. ABySS Sealer v2.0.1 \cite{Paulino2015} was used to
+fill gaps in the scaffolded assembly using every 10th kmer starting at 100 and
+decreasing to 30. Pilon v1.22 \cite{Walker2014} polished the resulting
+gap-filled assembly using all trimmed DNA data. (Let's get this all into github)
 
 
 \subsection*{Genome annotation}
 
-MAKER (v2.31.6) [2] annotation of the genome was completed in two rounds, using only contigs of >1 kb and training MAKER with Kokia-specific sequences.  First, pass de novo annotations were derived from Genemark (v4.3.3) [3] and retained for MAKER training.  At the same time, BUSCO (v2) BUSCO (v2) [4] was used both to train Augustus and create a Snap model (WHAT'S A SNAP MODEL). Finally, Trinity (WHY TRINITY VS MEGAHIT) (v2.2.0) [1] was used to create an RNASeq-assembly to pass to MAKER as EST evidence.  The first pass of MAKER was run using the combination of: (1) the output from Genemark, (2) the BUSCO-generated Snap model, (3) the BUSCO-trained Augustus [5] model, (4) the Trinity RNASeq-assembly as ESTs, and (5) the UniProt protein database.
+MAKER (v2.31.6)\cite{Holt2011} annotation of the genome was completed in two
+rounds, using only contigs of \textless 1 kb and training MAKER with
+Kokia-specific sequences. First, pass de novo annotations were derived from
+Genemark (v4.3.3)\cite{Lomsadze2005} and retained for MAKER training. At the
+same time, BUSCO (v2)\cite{Simao2015} was used both to train Augustus and create
+a Snap model\note[Corrinne]{WHAT'S A SNAP MODEL}. Finally, Trinity
+\note[Corrinne]{WHY TRINITY VS MEGAHIT} (v2.2.0)\cite{Grabherr2011} was used to
+create an RNASeq-assembly to pass to MAKER as EST evidence. The first pass of
+MAKER was run using the combination of: (1) the output from Genemark, (2) the
+BUSCO-generated Snap model, (3) the BUSCO-trained Augustus\cite{Stanke2003}
+model, (4) the Trinity RNASeq-assembly as ESTs, and (5) the UniProt protein
+database.
 
 After the first pass of MAKER was complete, the annotations generated by MAKER
-were passed to autoAug.pl, an annotation training script included with Augustus, and were additionally used to generate a second Snap model. MAKER was run again with the same input except using the newly generated Snap model (#2 above) and Augustus model (#3 above) to replace those in the first pass. All annotations were output to gff format and can be found at https://github.com/Wendellab/KokiaKirkii.
+were passed to autoAug.pl, an annotation training script included with Augustus,
+and were additionally used to generate a second Snap model. MAKER was run again
+with the same input except using the newly generated Snap model (\#2 above) and
+Augustus model (\#3 above) to replace those in the first pass. All annotations
+were output to gff format and can be found at
+https://github.com/Wendellab/KokiaKirkii.
 
 \subsection*{Identification of Orthologs}
 
@@ -319,8 +357,8 @@ Amino acid sequences from G. kirkii, G. raimondii and K. drynarioides were
 clustered using OrthoFinder v1.1.41 \cite{Emms2015}, which utilizes a Markov
 clustering algorithm of normalized BLASTp scores to infer homology between
 proteins sequences of different species. OrthoFinder is similar to OrthoMCL2
-\cite{Li2003}, but reduces the number of BLAST results by filtering scores
-based on reciprocal best hits (RBHs) and corrects for gene length biases and
+\cite{Li2003}, but reduces the number of BLAST results by filtering scores based
+on reciprocal best hits (RBHs) and corrects for gene length biases and
 floor-limitation of e-values in BLAST scores prior to clustering. These
 corrections have been shown to increases precision by improved clustering of
 singletons (i.e., groups in which only one gene from each species is present)
@@ -338,15 +376,16 @@ group were then aligned using the pairwise2 python package and the BLOSUM62
 substitution matrix. The highest scoring alignments were then used as a guide to
 codon-align the CDS sequences. The CODEML package in PAML \cite{Yang2007} was
 used to calculate the dN, dS, and dN/dS values. Singletons in which any pairwise
-comparison resulted in a dS value greater than 0.03 was removed from the
-analysis and inferred to be a cluster of non-orthologous proteins. Distributions
-of all pairwise dN, dS, and dN/dS values were then plotted, and mean value and
-standard deviation is reported. Estimates of total divergence time between each
-pairwise group was calculated using the equation T=dS/(2r) where r is the
-absolute rate of synonymous substitutions of Adh genes in palms (2.6 X 10-9
-substitutions X substitution site-1 X year-1) \cite{Cronn2002} \cite{Morton1996}
-or members of Brassicaceae (1.5 X 10-8 substitutions X synonymous site-1 X
-year-1) \cite{Koch2000}.
+comparison resulted in a dS value greater than 0.03\note[Justin]{May need to
+  adjust after doing said analysis}\note[Corrinne]{What was our justification
+  for this again?} was removed from the analysis and inferred to be a cluster of
+non-orthologous proteins. Distributions of all pairwise dN, dS, and dN/dS values
+were then plotted, and mean value and standard deviation is reported. Estimates
+of total divergence time between each pairwise group was calculated using the
+equation T=dS/(2r) where r is the absolute rate of synonymous substitutions of
+Adh genes in palms (2.6 X 10-9 substitutions X substitution site-1 X year-1)
+\cite{Cronn2002, Morton1996} or members of Brassicaceae (1.5 X 10-8
+substitutions X synonymous site-1 X year-1) \cite{Koch2000}.
 
 
 \subsection*{Copy Number Variation Estimation}
@@ -355,7 +394,12 @@ calculate lineage-specific gene losses and duplications as inferred by
 OrthoFinder. A gene loss was defined as an orthologous group in which 2 species
 had the same number of genes present (n), but the third species contained n-1
 genes. Likewise, a gene duplication was identified by 2 species containing n
-genes, while the third contained n+1.
+genes, while the third contained n+1.\note[Justin]{Very rough estimate of gene
+  loss and duplication; do we want more sophisticated method? Other parts to
+  this section?}\note[Corrinne]{We probably should cross-check these to make
+  sure things didn’t get screwed up, e.g., a gene “loss” is actually where
+  something got thrown in as a “duplication” or as a loner (true singleton with
+  no match in other genomes)}
 
 
 \subsection*{Repeat clustering and annotation}
@@ -363,18 +407,18 @@ All reads from one of the paired-end files (i.e., R1) were filtered for quality
 and trimmed to a standard 95nt using Trimmomatic version 0.33 \cite{Bolger2014}
 as per (https://github.com/Wendellab/KokiaKirkii). Surviving reads were randomly
 subsampled to represent a 1\% genome size equivalent for each genome
-\cite{Hendrix2005} \cite{Wendel2002} and combined as input into the
-RepeatExplorer pipeline \cite{Novak2013} \cite{Novak2010}, which is designed to
-cluster reads based on similarity and identify putative repetitive sequences
-using low-coverage, small read sequencing. Clusters containing a minimum of
-0.01\% of the total input sequences (i.e., 201 reads from a total input of
-2,013,469 reads) were annotated by the RepeatExplorer implementation of
-RepeatMasker \cite{Smit2015} using a custom library derived from a combination
-of Repbase version WHATEVER \cite{Bao2015} and previously annotated cotton
-repeats \cite{Paterson2012} \cite{Grover2008} \cite{Grover2007}
-\cite{Grover2004} \cite{Hawkins2006}. A cutoff of 0.01\% read representation is
-common; however, we evaluated the suitability of this cut using a log of
-diminishing returns (FIGURE WHATEVER; https://github.com/Wendellab/KokiaKirkii).
+\cite{Hendrix2005, Wendel2002} and combined as input into the RepeatExplorer
+pipeline \cite{Novak2013, Novak2010}, which is designed to cluster reads based
+on similarity and identify putative repetitive sequences using low-coverage,
+small read sequencing. Clusters containing a minimum of 0.01\% of the total
+input sequences (i.e., 201 reads from a total input of 2,013,469 reads) were
+annotated by the RepeatExplorer implementation of RepeatMasker \cite{Smit2015}
+using a custom library derived from a combination of Repbase version WHATEVER
+\cite{Bao2015} and previously annotated cotton repeats \cite{Paterson2012,
+  Grover2008, Grover2007, Grover2004, Hawkins2006}. A cutoff of 0.01\% read
+representation is common; however, we evaluated the suitability of this cut
+using a log of diminishing returns (FIGURE WHATEVER;
+https://github.com/Wendellab/KokiaKirkii).
 
 Within the annotated clusters, the number of megabases (Mb) attributable to that
 cluster (i.e., element type) for each genome/accession was calculated based on
@@ -390,9 +434,9 @@ and scripts are available at (https://github.com/Wendellab/KokiaKirkii).
 \subsection*{Repeat heterogeneity and relative age}
 Relative cluster age was approximated using the among-read divergence profile of
 each cluster, as previously used for Fritillaria \cite{Kelly2015} and dandelion
-\cite{Ferreira2016}. Briefly, an all-versus-all BLASTn \cite{Boratyn2013}
-\cite{Altshul1990} was conducted on a cluster-by-cluster basis using the same
-BLAST parameters implemented in RepeatExplorer. A histogram of pairwise percent
+\cite{Ferreira2016}. Briefly, an all-versus-all BLASTn \cite{Boratyn2013,
+  Altshul1990} was conducted on a cluster-by-cluster basis using the same BLAST
+parameters implemented in RepeatExplorer. A histogram of pairwise percent
 identity was generated for each cluster and the trend (i.e., biased toward
 high-identity, “young” or lower-identity, “older” element reads) was described
 for each via regression models using R. Specifically, two regression models were
@@ -417,7 +461,7 @@ relative characterization of cluster/element age and is not designed to detect
 statistically significant differences.
 
 \subsection*{Repetitive profiles between Kokia drynarioides and Gossypioides kirkii}
-Comparison of abundance  for the annotated clusters in Kokia drynarioides and
+Comparison of abundance for the annotated clusters in Kokia drynarioides and
 Gossypioides kirkii were visualized via ggplot \cite{Wickham2016}, including a
 1:1 ratio line to indicate the expected relationship between K. drynarioides and
 G. kirkii cluster sizes if their repetitive profiles had remained static
@@ -430,8 +474,144 @@ p-values were subject to Benjamini-Hochberg correction for multiple testing
 % Results and Discussion can be combined.
 \section*{Results}
 
+\subsection*{Kokia genome assembly and annotation}
+
+\todo{STATS ON THE KOKIA GENOME HERE. STATS ON THE ANNOTATION TOO.}
+
+\subsection*{Molecular evolution between Kokia drynarioides and Gossypioides
+  kirkii}
+
+\begin{enumerate}
+\item Outgroup equivalency/utility: are they equal for molecular evolutionary purposes
+  \begin{enumerate}
+  \item Limited by no population data
+  \item Ks/Ks of Gk-Gr versus Kd-Gr; are they equivalent
+  \item Gene cluster comparisons: does Gk or Kd perform equivalently? i.e.,
+    number of Gr-Kd only groups versus number of Gr-Gk only groups
+  \item when would having two outgroups be of a benefit
+  \item Ka/Ks for Gk-Kd: high or low? What do we expect?
+  \item Gene content comparison : what is “missing”? What is unique?
+  \end{enumerate}
+\item Colinearity (at all?) or just intergenic SNPs/indels via gatk?
+\end{enumerate}
+
+\subsection*{Changes in the repetitive landscape between Kokia drynarioides and
+  Gossypioides kirkii}
+
+Because K. dryanarioides and G. kirkii have relatively compact genomes, multiple
+representatives of three cotton species previously used for repetitive analysis
+\cite{Renny-Byfield2016} were included in the clustering to aid in the
+identification of repeat-derived sequences. Just over two million reads derived
+from these five species (comprising 1\% genome size equivalents each) were
+co-clustered using the RepeatExplorer pipeline, producing a total 74,001
+clusters (n >2 reads). Because the smallest clusters are neither informative nor
+reliable indicators of repetitiveness, we chose to annotate only those clusters
+composed of greater than 0.01\% of the total reads input (=201 reads), resulting
+in 274 retained clusters. We evaluated the cumulative read sum as the cluster
+number increases (clusters are numbered from largest to smallest) to confirm
+that this represents a reasonable partitioning of the data set.
+\note{cotton\_cutoff.png}
+
+Despite identically sized genomes, K. drynarioides and G. kirkii show an
+approximately 1 Mb\note[Corrinne]{put the linear regression stuff in here?}
+difference in clustered repeats, although this lacks statistical significance.
+Contingency table analysis of the repetitive profiles of each species, as well
+as the total amount of repetitive DNA calculated for each, suggest that these
+profiles are indistinguishable (at p < 0.05), despite the intergeneric
+comparison. Interspecies (intragenus) repetitive profiles for those Gossypium
+species present in the analysis showed a different pattern, whereby the basally
+divergent G. raimondii compared to either A-genome species (i.e., G. herbaceum
+and G. arboreum) shows a highly distinct repetitive profile (p <0.05), although,
+notably, the sister A-genome species are not distinct (see discussion).
+
+To ascertain the extent of the differences between K. drynarioides and G.
+kirkii, we considered the possibility that while the overall repetitive profiles
+may not be significantly different, individual clusters may be. Toward this end,
+we conducted a chi2 test of independence for each cluster and applied a
+Benjamini-Hochberg correction for multiple testing. At p<0.05, XXX clusters (out
+of XXX) are differentially abundant in K. drynarioides versus G. kirkii, with
+the species displaying greater abundance occurring approximately the same number
+of times for both (XXX with greater abundance in K. drynarioides versus XXX in
+G. kirkii; Table Abundance). Because these differentially abundant clusters
+could represent differences in either proliferation or decay/removal, we gauged
+the relative age of each cluster based of the method of Ferreira de Carvalho
+(2016). This analysis attempts to characterize the age of each
+cluster\note[Corrinne]{should we redo this just for the Kok/Kirk reads? would
+  the A-genome reads, minimally, be biasing some of these toward "youth"?} based
+on the distinctiveness of the reads which comprise the cluster; that is, younger
+clusters will have reads that are highly similar, whereas older clusters will
+have reads that show a number of differences. While an imperfect measure, this
+characterization permits a generalized perspective on the repeats identified
+here. Overall, most of the repeats in K. drynarioides and G. kirkii displayed a
+pattern suggestive of older elements (202 versus 72 “young”); however, of the
+XXX differentially abundant clusters, XXX were categorized as “young” and XXX as
+“older” (Table Abundance), potentially reflecting SOMETHING ABOUT GAIN VERSUS
+LOSS.
+
+Most of the clusters were broadly annotated as belonging to the Ty3/gypsy
+superfamily, a result not surprising for a plant lineage (Figure Amounts).
+Overall, gypsy elements comprise XXX to XXX of the K. drynarioides and G. kirkii
+genomes, respectively, with uncategorized LTR-retrotransposons and Ty1/copia
+elements comprising the next most abundant repeats and comprising similar
+amounts in each genome. Unsurprisingly, the small genomes of K. drynarioides and
+G. kirkii had lower absolute abundance of most repeat types except the predicted
+non-LTR retroposons, in which these two species had comparable or slightly
+greater occupation as the cotton species, which possess 2-3x larger genomes.
+This difference is due to the sole retroposon clusters recovered, which was in
+the top 5 largest clusters for both K. drynarioides and G. kirkii. The high
+percent identity among reads for this cluster suggests it is relatively young,
+and it has likely experienced proliferation in both species. Furthermore, the
+cluster shows differential abundance between the two species, suggesting that
+either the proliferation began prior to species divergence and continued with
+varying success afterwards, or the two lineages experienced similar releases
+from repression for this element, although again to varying degrees. The other
+differentially abundant clusters were largely annotated as putative gypsy
+elements (RIGHT?) (XX \%).
+
 \section*{Discussion}
 
+Divergence and speciation are expected outcomes of long-distance insular
+dispersal, whose conceptual foundations are rooted in the observations of Darwin
+and other early evolutionary biologists. The tribe Gossypieae is characterized
+by such dispersals, ultimately achieving worldwide distribution on all tropical
+and subtropical-inclusive continents. Most Gossypieae genera, save for the
+eponymous Gossypium (cotton genus), have been grossly understudied except as
+each pertains to the evolution of cotton. Here we present first-pass genome
+assemblies for the outgroup congeners to Gossypium, which together provide
+insight into the interesting biogeographic history of these genera and their
+equivocality as outgroups in studying the evolution of the cotton genus.
+
+\begin{enumerate}
+\item Compare molecular differences to perceived degree of morphological differentiation?
+\end{enumerate}
+
+{
+  \color{Blue}
+Phylogenetics in the tribe: ndhF shows longer NJ branch length for Kokia than kirkii (congruence and consensus)
+
+Long-distance salt water dispersal common in gossypieae
+
+
+Advance Agronomy
+\begin{itemize}
+\item Lebronnecia – marquesas (south pacific)
+\item Thespecia thespesioides – pan tropical
+\item Hampia – neotropical (americas)
+\item Thespesia populnea – pan tropical
+\item Cephalohibiscus – new guinea and solomon islands (Australia)
+\end{itemize}
+
+Maybe we would expect there to be stepping speciation among these island
+regions, e.g., south pacific lebronnecia to be between Kokia and kirkii, or
+neotropical Hampea to be between the two. Clearly congeners, molecularly and
+united by n=12. Hawaiian islands only $\approx$3myo, so Kokia probably colonized them as
+they were formed. What about kirkii? Is it an older population, from which Kokia
+is derived (probably not given the data), or was it a dispersal event from who
+knows where of a now extinct ancestor?
+
+}
+
+  
 \section*{Supporting Information}
 
 % Include only the SI item label in the subsection heading. Use the \nameref{label} command to cite SI items in the text.
