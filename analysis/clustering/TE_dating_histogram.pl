@@ -20,6 +20,8 @@ while(<>){
     # Skip self-hits
     next if $id->[0] eq $id->[1];
 
+    next unless ( $id->[0] =~ m/(kokia|kirkii)/ || $id->[1] =~ m/(kokia|kirkii)/ );
+
     # filter minimum overlap
     $_->{overlap} = abs($_->{start} - $_->{stop}) +1 foreach ($long, $short);
     next unless (($long->{overlap} >= $OVL || $short->{overlap} >= $OVL) && $pid >= $PID);
