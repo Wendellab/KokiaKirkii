@@ -41,7 +41,7 @@ dev.off()
 
 
 ################### ordination ###################
-### PCoA ###
+### PCoA of scaled data ###
 
 annot_clust <- read.table("annotated.counts", header = T, row.names=1, sep="\t")
 
@@ -49,7 +49,7 @@ ord_table <- annot_clust[,(3:17)]
 Mb_table <- ord_table*0.0095 
 # 0.0095 multiplier represents # reads (x) * 95nt/read * 1 kb/1000nt * 1Mb/1000kb * 100% = # reads * 0.0095 = # Mb in entire genome for that cluster 
 
-# convert to percent of genome to balance the numbers for ordination
+# convert to percent of genome to balance the numbers for ordination, asks are the relative proportions the same
 # A1 (G. herbaceum) = 1667 Mb; sampling = 175474
 # A2 (G. arboreum) = 1689 Mb; sampling = 180063
 # D5 (G. raimondii) = 880 Mb; sampling = 92631
@@ -68,7 +68,7 @@ text(x, y, labels = row.names(mydata), cex=.7)
 points(x, y, pch=19) 
 
 cmdpoints <- as.data.frame(cmdfit$points)
-cmdpoints$genome <- gsub("_*", "", row.names(cmdpoints))
+cmdpoints$genome <- sub("_.*", "", row.names(cmdpoints))
 cmdpoints$species <- rownames(cmdpoints)
 
 png("cotton.ordination.png", 5000, 5000, pointsize=12, res=600)
@@ -90,6 +90,30 @@ subfac <- as.factor(subsections[,3])
 png("cotton_outgroup.PCA.direct.annot.png", 5000, 5000, pointsize=12, res=600)
 fviz_pca_ind(cluster.pca, habillage=subfac, pointsize =2, invisible="quali", repel=TRUE, labelsize=3) + theme_minimal() + labs(title = "PCA of raw counts") + theme(axis.text = element_text(size = rel(1.5)), plot.margin=margin(2,2,2,2,"cm"), plot.title=element_text(face="bold", hjust=0.5), axis.title.x = element_text(face="bold", hjust=0.5), axis.title.y = element_text(face="bold", vjust=0.5), legend.position="none") +theme_set(theme_grey(base_size=12))+ scale_color_manual(breaks=c("A1", "A2", "D5","kirkii", "kokia_"), values=c("orchid", "orchid4", "slategrey","blue3", "green3"))
 dev.off()
+
+### PCoA of log-transformed data ###
+# evaluates how close the overall repetitive profiles are to one another
+
+ord_table[ord_table==0]=0.00000001 # no -Inf values in PCA, so make them really small here
+logdata <- t(log(ord_table))
+
+dlog <- dist(logdata, method = "euclidean")
+
+logcmd <- cmdscale(dlog,eig=TRUE, k=2) # k is the number of dim
+logx <- logcmd$points[,1]
+logy <- logcmd$points[,2]
+plot(logx, logy, xlab="Coordinate 1", ylab="Coordinate 2", main="Metric MDS",	type="n")
+text(logx, logy, labels = row.names(logdata), cex=.7)
+points(logx, logy, pch=19) 
+
+logcmdpoints <- as.data.frame(logcmd$points)
+logcmdpoints$genome <- sub("_.*", "", row.names(logcmdpoints))
+logcmdpoints$species <- rownames(logcmdpoints)
+
+png("cotton.ordination.log.png", 5000, 5000, pointsize=12, res=600)
+ggplot(logcmdpoints, aes(x=V1, y=V2, color=genome, shape=genome)) + geom_point(size=2) + xlab("PCoA component 1") + ylab("PCoA component 2") + scale_color_manual(values=c("A1"="orchid", "A2"="orchid4", "D5"="slategrey","kirkii"="blue3", "kokia"="green3"))+ geom_text_repel(aes(label=species))
+dev.off()
+
 
 ### Procrustes ANOVA and pairwise tests using complex linear models
 ### which species differ from one another in repeats
@@ -215,32 +239,40 @@ dev.off()
 chi_table <- annot_clust[,c(1,15:16)]
 chi_table <- chi_table[!(rowSums(chi_table[,c(2:3)])==0),]
 
-chi_table$p.value <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x, simulate.p.value=TRUE)$p.value)
-chi_table$statistic <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x, simulate.p.value=TRUE)$statistic)
-# note there are 35 clusters with the warning "In chisq.test(x) : Chi-squared approximation may be incorrect"
-# if you DO NOT use the p-value simulation
-# The "simulate.p.value=T" option (default value is FALSE) does the Monte Carlo simulation using "B=999" (default value is B=2000) replicates; from https://ww2.coastal.edu/kingw/statistics/R-tutorials/independ.html
+chi_table$p.value <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x, simulate.p.value=TRUE, B=50000)$p.value)
+chi_table$statistic <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x)$statistic)
+# note if you DO NOT use the p-value simulation
+# there are 35 clusters with the warning "In chisq.test(x) : Chi-squared approximation may be incorrect"
+# The "simulate.p.value=T" option (default value is FALSE) does the Monte Carlo simulation; from https://ww2.coastal.edu/kingw/statistics/R-tutorials/independ.html
 
 chi_table$p.adjust <- p.adjust(chi_table$p.value, method="BH")
 
 # > row.names(chi_table[(chi_table$p.adjust<0.001),])
-# character(0)
+# [1] "CL0002" "CL0005" "CL0050" "CL0084" "CL0096" "CL0097" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0119"
+# [14] "CL0121" "CL0126" "CL0129" "CL0141" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188"
 # > row.names(chi_table[(chi_table$p.adjust<0.005),])
-#  [1] "CL0002" "CL0005" "CL0050" "CL0084" "CL0096" "CL0097" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0119" "CL0121" "CL0126" "CL0129" "CL0141" "CL0158" "CL0162" "CL0164" "CL0175"
-# [22] "CL0177" "CL0187" "CL0188" "CL0191" "CL0203" "CL0238" "CL0253"
+# [1] "CL0002" "CL0005" "CL0017" "CL0050" "CL0066" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0101" "CL0105" "CL0107"
+# [14] "CL0110" "CL0116" "CL0117" "CL0119" "CL0121" "CL0126" "CL0129" "CL0136" "CL0141" "CL0158" "CL0162" "CL0164" "CL0175"
+# [27] "CL0177" "CL0187" "CL0188" "CL0190" "CL0191" "CL0238" "CL0253" "CL0274"
 # > row.names(chi_table[(chi_table$p.adjust<0.01),])
-#  [1] "CL0002" "CL0005" "CL0017" "CL0050" "CL0066" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0098" "CL0100" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0118" "CL0119" "CL0121"
-# [22] "CL0126" "CL0129" "CL0136" "CL0141" "CL0149" "CL0158" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188" "CL0190" "CL0191" "CL0203" "CL0238" "CL0253" "CL0274"
+# [1] "CL0002" "CL0005" "CL0017" "CL0050" "CL0066" "CL0069" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0098" "CL0100"
+# [14] "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0118" "CL0119" "CL0121" "CL0126" "CL0129" "CL0136" "CL0141"
+# [27] "CL0149" "CL0158" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188" "CL0190" "CL0191" "CL0203" "CL0238" "CL0242"
+# [40] "CL0253" "CL0274"p05 <- row.names(chi_table[(chi_table$p.adjust<0.05),])
+
 p05 <- row.names(chi_table[(chi_table$p.adjust<0.05),])
-#  [1] "CL0002" "CL0005" "CL0010" "CL0017" "CL0050" "CL0060" "CL0066" "CL0069" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097" "CL0098" "CL0100" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117"
-# [22] "CL0118" "CL0119" "CL0121" "CL0126" "CL0128" "CL0129" "CL0131" "CL0136" "CL0141" "CL0147" "CL0149" "CL0150" "CL0153" "CL0158" "CL0161" "CL0162" "CL0164" "CL0168" "CL0170" "CL0175" "CL0177"
-# [43] "CL0187" "CL0188" "CL0190" "CL0191" "CL0202" "CL0203" "CL0219" "CL0238" "CL0242" "CL0243" "CL0253" "CL0271" "CL0274"
+# [1] "CL0002" "CL0005" "CL0010" "CL0017" "CL0050" "CL0060" "CL0066" "CL0069" "CL0082" "CL0084" "CL0085" "CL0096" "CL0097"
+# [14] "CL0098" "CL0100" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0118" "CL0119" "CL0121" "CL0126" "CL0128"
+# [27] "CL0129" "CL0131" "CL0136" "CL0141" "CL0147" "CL0149" "CL0150" "CL0153" "CL0158" "CL0161" "CL0162" "CL0164" "CL0168"
+# [40] "CL0170" "CL0175" "CL0177" "CL0187" "CL0188" "CL0190" "CL0191" "CL0202" "CL0203" "CL0219" "CL0238" "CL0242" "CL0243"
+# [53] "CL0253" "CL0271" "CL0274"
 
 #  clusters with warnings if no p-value simulation
 warnME <- NULL
 for (i in c(1:188)) { assign("last.warning", NULL, envir = baseenv()); ifelse(has_warning(chisq.test(chi_table[i,c(2:3)])), warnME <- c(warnME,(row.names(chi_table)[i])),"") }
-#  [1] "CL0001" "CL0004" "CL0013" "CL0018" "CL0019" "CL0024" "CL0031" "CL0034" "CL0037" "CL0044" "CL0054" "CL0055" "CL0064" "CL0067" "CL0080" "CL0092" "CL0132" "CL0134" "CL0155"
-# [20] "CL0179" "CL0181" "CL0195" "CL0209" "CL0214" "CL0215" "CL0223" "CL0233" "CL0234" "CL0243" "CL0246" "CL0252" "CL0259" "CL0264" "CL0267" "CL0269"
+#  [1] "CL0001" "CL0004" "CL0013" "CL0018" "CL0019" "CL0024" "CL0031" "CL0034" "CL0037" "CL0044" "CL0054" "CL0055" "CL0064"
+# [14] "CL0067" "CL0080" "CL0092" "CL0132" "CL0134" "CL0155" "CL0179" "CL0181" "CL0195" "CL0209" "CL0214" "CL0215" "CL0223"
+# [27] "CL0233" "CL0234" "CL0243" "CL0246" "CL0252" "CL0259" "CL0264" "CL0267" "CL0269"
 
 intersect(warnME, p05)
 #  only CL243 overlaps between the warnings and sig diff clusters at p<0.05
@@ -250,18 +282,18 @@ sigtable <- chi_table[p05,c(1:3)]
 sigtable$greater <- ifelse(sigtable$kokia_ > sigtable$kirkii, "kokia", ifelse(sigtable$kirkii > sigtable$kokia_, "kirkii", "same"))
 table(sigtable$greater)
 #kirkii  kokia 
-#    22     33 
+#    21     34 
 
 table(sigtable$Lineage)
 #  *    LTR     LTR/Copia      LTR/Gypsy       non-LTR_retroposon        Unspecified 
 #  2     11         6              34                  1                      1 
 
 sum(sigtable$kirkii)*0.0095 # 0.0095 is the same factor used above, with the conversion to Mb
-# [1] 70.167
+# [1] 70.4235
 sum(sigtable$kokia_)*0.0095
-# [1] 67.7825
+# [1] 68.894
 sum(sigtable$kirkii)*0.0095-sum(sigtable$kokia_)*0.0095
-# [1] 2.3845
+# [1] 1.5295
                             
                              
                              
@@ -270,15 +302,42 @@ sum(sigtable$kirkii)*0.0095-sum(sigtable$kokia_)*0.0095
 # see TE_dating_histogram.pl for table generation
 
 ages <- read.table("cluster.ages", header=T, row.names=1, sep="\t")
+KdGkages <- read.table("KokKirk.cluster.ages", header=T, row.names=1, sep="\t")
+KdGkages$age <- KdGkages$Category
+
+#Category	age
+#1	young
+#3	old
+#4	young
+#5	old
+#4*	old
+
+KdGkages$age <- sub("3|5|4\\*","old",KdGkages$age)
+KdGkages$age <- sub("1|4","young",KdGkages$age)
 
 table(ages$age)
 #  old young 
 #  202    72 
+
+table(KdGkages$age)
+
+# old young 
+# 127    49 
+
 
 sigages <- merge(sigtable,ages,by="row.names")
 table(sigages$age)
 #  old young 
 #   30    25 
 
+sigGkKd <- merge(sigtable, KdGkages, by="row.names")
+table(sigGkKd$age)
 
+# old young 
+#  31    24 
+
+changed <- NULL
+for (i in c(1:55)) { ifelse(identical(as.character(sigages$age[i]), as.character(sigGkKd$age[i])), "", changed <- c(changed,sigages$Row.names[i])) }
+changed
+# CL0097 young -> old
 
