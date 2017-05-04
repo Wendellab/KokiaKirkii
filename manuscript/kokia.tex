@@ -166,6 +166,7 @@
 
 %% END MACROS SECTION
 
+\usepackage{booktabs}
 
 \begin{document}
 \vspace*{0.35in}
@@ -325,7 +326,9 @@ analysis. Each retained assembly was further scaffolded with ABySS using the
 MEGAHIT-derived transcripts. ABySS Sealer v2.0.1 \cite{Paulino2015} was used to
 fill gaps in the scaffolded assembly using every 10th kmer starting at 100 and
 decreasing to 30. Pilon v1.22 \cite{Walker2014} polished the resulting
-gap-filled assembly using all trimmed DNA data. (Let's get this all into github)
+gap-filled assembly using all trimmed DNA data. QUAST v4.5 \cite{Gurevich2013}
+was used to generate the final assembly statistics. (Let's get this all into
+github)
 
 
 \subsection*{Genome annotation}
@@ -476,7 +479,72 @@ p-values were subject to Benjamini-Hochberg correction for multiple testing
 
 \subsection*{Kokia genome assembly and annotation}
 
-\todo{STATS ON THE KOKIA GENOME HERE. STATS ON THE ANNOTATION TOO.}
+\begin{table}[ht]
+  \begin{center}
+    \caption{Kokia Genome Assembly Statistics. All statistics are based on contigs of size $\geq$ 500 bp, unless otherwise noted (e.g., "\# contigs ($\geq$ 0 bp)" and "Total length ($\geq$ 0 bp)" include all contigs).}
+    \begin{tabular}{l*{2}{r}}
+      \toprule
+      Assembly & Kokia Scaffolds & Kokia Contigs \\
+      \midrule
+      \# contigs ($\geq$ 0 bp) & 130430 & - \\ 
+      \# contigs ($\geq$ 1000 bp) & 15404 & 21494 \\ 
+      \# contigs ($\geq$ 5000 bp) & 7390 & 11998 \\ 
+      \# contigs ($\geq$ 10000 bp) & 5267 & 8994 \\ 
+      \# contigs ($\geq$ 25000 bp) & 3543 & 5501 \\ 
+      \# contigs ($\geq$ 50000 bp) & 2385 & 2984 \\ 
+      Total length ($\geq$ 0 bp) & {\bf 537779651} & - \\ 
+      Total length ($\geq$ 1000 bp) & {\bf 518114202} & 516998315 \\ 
+      Total length ($\geq$ 5000 bp) & {\bf 499433075} & 494744281 \\ 
+      Total length ($\geq$ 10000 bp) & {\bf 484390717} & 473215614 \\ 
+      Total length ($\geq$ 25000 bp) & {\bf 456973742} & 415721086 \\ 
+      Total length ($\geq$ 50000 bp) & {\bf 415141424} & 325473417 \\ 
+      \# contigs & 19146 & 25827 \\ 
+      Largest contig & {\bf 2291099} & 974327 \\ 
+      Total length & {\bf 520833981} & 520152831 \\ 
+      GC (\%) & 33.08 & 33.08 \\ 
+      N50 & {\bf 176649} & 72430 \\
+      N75 & {\bf 66795} & 31815 \\
+      L50 & {\bf 756} & 1895 \\ 
+      L75 & {\bf 1960} & 4594 \\
+      \# N's per 100 kbp & 84.02 & {\bf 2.00} \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{BUSCO (Single-Copy Orthologs) Statistics}
+    \begin{tabular}{lr}
+      \toprule
+      Type & Count\\
+      \midrule
+      Complete BUSCOs & 1377\\
+      Complete and single-copy BUSCOs & 1213\\
+      Complete and duplicated BUSCOs & 164\\
+      Fragmented BUSCOs & 17\\
+      Missing BUSCOs & 46\\
+      Total BUSCO groups searched & 1440\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{table}[ht]
+  \begin{center}
+    \caption{Kokia Annotation Statistics.}
+    \begin{tabular}{l*{3}{r}}
+      \toprule
+      Feature & Total Predicted & W/ Evidence  & W/ Strong Evidence\\
+      \midrule
+      Genes &  29231 & & \\
+      mRNAs & 29231 &  & \\
+      CDSs & 171914 &  & \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+\todo{Update annotation table with evidence numbers}
 
 \subsection*{Molecular evolution between Kokia drynarioides and Gossypioides
   kirkii}
