@@ -164,6 +164,12 @@
 
 %% Include all macros below
 
+\usepackage{array}
+% \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}m{3.5cm}}
+
 %% END MACROS SECTION
 
 \usepackage{booktabs}
@@ -533,18 +539,17 @@ p-values were subject to Benjamini-Hochberg correction for multiple testing
 \begin{table}[ht]
   \begin{center}
     \caption{Kokia Annotation Statistics.}
-    \begin{tabular}{l*{3}{r}}
+    \begin{tabular}{l*{3}{R}}
       \toprule
-      Feature & Total Predicted & W/ Evidence  & W/ Strong Evidence\\
+      Feature & Total Predicted & Supported (eAED~\textless~1) & Strongly Supported (eAED~$\le$~0.2)\cite{Wegrzyn2014} \\
       \midrule
-      Genes &  29231 & & \\
-      mRNAs & 29231 &  & \\
-      CDSs & 171914 &  & \\
+      Genes &  29231 & 29171 & 19716 \\
+      mRNAs & 29231 & 29171 & 19716 \\
+      CDSs & 171914 & 171737 & 114013 \\
       \bottomrule
     \end{tabular}
   \end{center}
 \end{table}
-\todo{Update annotation table with evidence numbers}
 
 \subsection*{Molecular evolution between Kokia drynarioides and Gossypioides
   kirkii}
