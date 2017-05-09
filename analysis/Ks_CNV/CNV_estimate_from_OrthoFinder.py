@@ -21,7 +21,7 @@ with infile as f:
     first_line = first_line.split('\t')
     gain_loss = {key:{"gain":[], "loss":[]} for key in first_line[1:]}
     for line in f:
-        line = line.split('\t')[1:]
+        line = line.strip("\r\n").split('\t')[1:]
         c = [len(i.split(',')) for i in line]
         for i in range(3):
             if line[i] == "":
