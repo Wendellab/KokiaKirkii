@@ -21,41 +21,38 @@ with infile as f:
     first_line = first_line.split('\t')
     gain_loss = {key:{"gain":[], "loss":[]} for key in first_line[1:]}
     for line in f:
-        line = line.strip("\r\n").split('\t')[1:]
+        line = line.strip().split('\t')[1:]
+        while len(line) < len(first_line):
+            line.append(" ")
         c = [len(i.split(',')) for i in line]
-        for i in range(3):
-            if line[i] == "":
+        for i in range(len(first_line)):
+            if line[i] == "" or line[i] == " ":
                 c[i] = 0 #corrects for no genes reporting has having length of 1 (empty string)
         if len(set(c)) != 1:
-            if c[0] == c[1]:
-                if c[1] > c[2]: #gain in c[2]
+            if c[0] == c[1] and c[0] != 0:
+                if c[1] > c[2]: #loss in c[2]
                     dif = c[1] - c[2]
-                    gain_loss[first_line[2]]["gain"].append(dif)
-                elif c[2] > c[1]: #loss in c[2]
-                    dif = c[2] - c[1]
                     gain_loss[first_line[2]]["loss"].append(dif)
-                #print(*line, sep='\t')
-            elif c[0] == c[2]:
+#                    print(*line, sep='\t')
+                elif c[2] > c[1]: #gain in c[2]
+                    dif = c[2] - c[1]
+                    gain_loss[first_line[2]]["gain"].append(dif)
+#                    print(*line, sep='\t')
+            elif c[0] == c[2] and c[0] != 0:
                 if c[1] > c[2]: #gain in c[1]
                     dif = c[1]-c[2]
                     gain_loss[first_line[1]]["gain"].append(dif)
+#                    print(*line, sep='\t')
                 elif c[2] > c[1]: #loss in c[1]
                     dif = c[2]-c[1]
                     gain_loss[first_line[1]]["loss"].append(dif)
-                    print(*line, sep='\t')
-
+#                    print(*line, sep='\t')
 
 for x in gain_loss:
+    print(x)
     for y in gain_loss[x]:
-        l = gain_loss[x][y]
-        gain_loss[x][y] = dict((x,l.count(x)) for x in set(l))
-
-
-#for x in gain_loss:
-#    print(x)
-#    for y in gain_loss[x]:
-#        print('\t', y)
-#        for z in sorted(gain_loss[x][y]):
-#            print('\t\t',z,":",gain_loss[x][y][z])
+        print('\t', y)
+        for z in sorted(set(gain_loss[x][y])):
+            print('\t\t',z,":",gain_loss[x][y].count(z))
 
 
