@@ -1,0 +1,14 @@
+#NEXUS
+begin taxa;
+	dimensions ntax=5;
+	taxlabels
+	A1
+	A2
+	D5
+	kirkii
+	kokia
+;
+end;
+begin trees;
+	tree tree_1 = [&R] (((A2:2.0E-5,A1:4.8E-5):0.002302,D5:0.003131):0.002213,(kirkii:0.0013,kokia:0.002414):0.002213);
+end;

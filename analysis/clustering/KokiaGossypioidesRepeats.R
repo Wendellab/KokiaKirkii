@@ -7,6 +7,11 @@ library(gridExtra)
 library(geomorph)
 library(testit)
 
+library(ape)
+library(phytools)
+library(phylotools)
+library(geiger)
+
 #############################################
 sessionInfo()
 # R version 3.3.3 (2017-03-06)
@@ -35,7 +40,7 @@ data <- read.table("all.counts", header = T, row.names=1, sep="\t")
 data$size <- as.numeric(rowSums(data[,-1]))
 data$percent <- cumsum(data$size)/sum(data$size)
 
-png("cotton.cutoff.png", 5000, 5000, pointsize=12, res=600)
+png("Figure_cotton.cutoff.png", 5000, 5000, pointsize=12, res=600)
 ggplot(data, aes(x=cluster, y=percent)) + geom_line(size=1) + geom_vline(xintercept=274, color='yellow3', size=1) + scale_x_log10(labels=comma) + scale_y_log10() + geom_vline(xintercept=0, color="grey")+ geom_hline(yintercept=0, color="grey")
 dev.off()
 
@@ -71,7 +76,7 @@ cmdpoints <- as.data.frame(cmdfit$points)
 cmdpoints$genome <- sub("_.*", "", row.names(cmdpoints))
 cmdpoints$species <- rownames(cmdpoints)
 
-png("cotton.ordination.png", 5000, 5000, pointsize=12, res=600)
+png("Figure_cotton.ordination.png", 5000, 5000, pointsize=12, res=600)
 ggplot(cmdpoints, aes(x=V1, y=V2, color=genome, shape=genome)) + geom_point(size=2) + xlab("PCoA component 1") + ylab("PCoA component 2") + scale_color_manual(values=c("A1"="orchid", "A2"="orchid4", "D5"="slategrey","kirkii"="blue3", "kokia"="green3"))+ geom_text_repel(aes(label=species))
 dev.off()
 
@@ -87,7 +92,7 @@ subsections$sub <-c("A1", "A1", "A1", "A2", "A2", "A2", "A2", "A2", "D5", "D5", 
 
 subfac <- as.factor(subsections[,3])
 
-png("cotton_outgroup.PCA.direct.annot.png", 5000, 5000, pointsize=12, res=600)
+png("Figure_cotton_outgroup.PCA.direct.annot.png", 5000, 5000, pointsize=12, res=600)
 fviz_pca_ind(cluster.pca, habillage=subfac, pointsize =2, invisible="quali", repel=TRUE, labelsize=3) + theme_minimal() + labs(title = "PCA of raw counts") + theme(axis.text = element_text(size = rel(1.5)), plot.margin=margin(2,2,2,2,"cm"), plot.title=element_text(face="bold", hjust=0.5), axis.title.x = element_text(face="bold", hjust=0.5), axis.title.y = element_text(face="bold", vjust=0.5), legend.position="none") +theme_set(theme_grey(base_size=12))+ scale_color_manual(breaks=c("A1", "A2", "D5","kirkii", "kokia_"), values=c("orchid", "orchid4", "slategrey","blue3", "green3"))
 dev.off()
 
@@ -110,7 +115,7 @@ logcmdpoints <- as.data.frame(logcmd$points)
 logcmdpoints$genome <- sub("_.*", "", row.names(logcmdpoints))
 logcmdpoints$species <- rownames(logcmdpoints)
 
-png("cotton.ordination.log.png", 5000, 5000, pointsize=12, res=600)
+png("Figure_cotton.ordination.log.png", 5000, 5000, pointsize=12, res=600)
 ggplot(logcmdpoints, aes(x=V1, y=V2, color=genome, shape=genome)) + geom_point(size=2) + xlab("PCoA component 1") + ylab("PCoA component 2") + scale_color_manual(values=c("A1"="orchid", "A2"="orchid4", "D5"="slategrey","kirkii"="blue3", "kokia"="green3"))+ geom_text_repel(aes(label=species))
 dev.off()
 
@@ -208,6 +213,11 @@ png("Figure_TE.amounts.png", 7500, 5000, pointsize=12, res=600)
 ggplot(KBm, aes(x=Lineage, y=value, fill = variable)) + geom_bar(stat = "identity",position = dodge) + scale_y_log10(labels=comma) + scale_fill_manual(breaks=c("kirkii", "kokia_", "A1", "A2", "D5"), values=c("blue3", "green3", "orchid", "orchid4", "slategrey")) + geom_errorbar(limits, position = dodge) + labs(title = "Aggregate amounts in each species", x="Broad element category", y="Aggregate amount (mean) in kilobases") + theme(axis.text = element_text(size = rel(1.5)), plot.margin=margin(2,2,2,2,"cm"), plot.title=element_text( face="bold", hjust=0.5), axis.title.x = element_text(face="bold", hjust=0.5), axis.title.y = element_text(face="bold", vjust=0.5))+theme_set(theme_grey(base_size=12))
 dev.off()
 
+png("Figure_TE.amounts.notlog.png", 7500, 5000, pointsize=12, res=600)
+
+ggplot(KBm, aes(x=Lineage, y=value, fill = variable)) + geom_bar(stat = "identity",position = dodge) + scale_fill_manual(breaks=c("kirkii", "kokia_", "A1", "A2", "D5"), values=c("blue3", "green3", "orchid", "orchid4", "slategrey")) + geom_errorbar(limits, position = dodge) + labs(title = "Aggregate amounts in each species", x="Broad element category", y="Aggregate amount (mean) in kilobases") + theme(axis.text = element_text(size = rel(1.5)), plot.margin=margin(2,2,2,2,"cm"), plot.title=element_text( face="bold", hjust=0.5), axis.title.x = element_text(face="bold", hjust=0.5), axis.title.y = element_text(face="bold", vjust=0.5))+theme_set(theme_grey(base_size=12))
+dev.off()
+
 sum(KBsum$kirkii)/1000 # convert to Mb
 # [1] 110.3615
 sum(KBsum$kokia_)/1000 # convert to Mb
@@ -231,6 +241,7 @@ p4 <- ggplot(KdGk[KdGk$Lineage == "LTR/Copia", ], aes(x=kokia_, y=kirkii, shape=
 
 grid.arrange(p1,p2,p3,p4, ncol=2)
 
+
 dev.off()
 
 
@@ -240,14 +251,14 @@ chi_table <- annot_clust[,c(1,15:16)]
 chi_table <- chi_table[!(rowSums(chi_table[,c(2:3)])==0),]
 
 chi_table$p.value <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x, simulate.p.value=TRUE, B=50000)$p.value)
-chi_table$statistic <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x)$statistic)
+chi_table$statistic <- apply(chi_table[,c(2:3)], 1, function(x) chisq.test(x)$statistic) # don't need to sim p-value here; this stat stays the same
 # note if you DO NOT use the p-value simulation
 # there are 35 clusters with the warning "In chisq.test(x) : Chi-squared approximation may be incorrect"
 # The "simulate.p.value=T" option (default value is FALSE) does the Monte Carlo simulation; from https://ww2.coastal.edu/kingw/statistics/R-tutorials/independ.html
 
 chi_table$p.adjust <- p.adjust(chi_table$p.value, method="BH")
 
-# > row.names(chi_table[(chi_table$p.adjust<0.001),])
+p001 <- row.names(chi_table[(chi_table$p.adjust<0.001),])
 # [1] "CL0002" "CL0005" "CL0050" "CL0084" "CL0096" "CL0097" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0119"
 # [14] "CL0121" "CL0126" "CL0129" "CL0141" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188"
 # > row.names(chi_table[(chi_table$p.adjust<0.005),])
@@ -336,8 +347,213 @@ table(sigGkKd$age)
 # old young 
 #  31    24 
 
+table(sigGkKd[sigGkKd$age=="young",]$greater)
+
+#kirkii  kokia 
+#     4     20 
+
 changed <- NULL
 for (i in c(1:55)) { ifelse(identical(as.character(sigages$age[i]), as.character(sigGkKd$age[i])), "", changed <- c(changed,sigages$Row.names[i])) }
 changed
 # CL0097 young -> old
+
+youngtable <- (sigGkKd[sigGkKd$age=="young",])
+youngtable$kokAmount <- youngtable$kokia_ * 9.5
+youngtable$kirAmount <- youngtable$kirkii * 9.5
+youngtable[youngtable$greater=="kirkii",]
+youngtable[youngtable$greater=="kirkii",]$kirAmount
+sum(youngtable[youngtable$greater=="kirkii",]$kirAmount)
+# [1] 9984.5
+
+sum(youngtable[youngtable$greater=="kokia",]$kokAmount)
+# [1] 13727.5
+
+
+######## ancestral state reconstruction of "very" significant clusters ######## 
+
+cptree <- read.nexus("cp.tre")
+
+plot.phylo(cptree, cex =3, label.offset=0.0005, align.tip.label=TRUE)
+nodelabels(cptree$node, adj=c(1.1,-0.2), frame="none", cex=3)
+
+ancTable <- Kbamount
+colnames(ancTable )[16] <- "kokia"
+ancTable $A1 <- rowMeans(ancTable [,2:4])
+ancTable $A2 <- rowMeans(ancTable [,5:9])
+ancTable $D5 <- rowMeans(ancTable [,10:14])
+ancTable <- ancTable[p001,15:19]
+
+
+# [1] "CL0005" "CL0050" "CL0084" "CL0096" "CL0097" "CL0101" "CL0105" "CL0107" "CL0110" "CL0116" "CL0117" "CL0119"
+# [14] "CL0121" "CL0126" "CL0129" "CL0141" "CL0162" "CL0164" "CL0175" "CL0177" "CL0187" "CL0188"
+
+# CL0002 sometimes shows up as significant, other times not
+# exclude it
+
+anc5 <- t(ancTable["CL0005", ])
+anc50 <- t(ancTable["CL0050", ])
+anc84 <- t(ancTable["CL0084", ])
+anc96 <- t(ancTable["CL0096", ])
+anc97 <- t(ancTable["CL0097", ])
+anc101 <- t(ancTable["CL0101", ])
+anc105 <- t(ancTable["CL0105", ])
+anc107 <- t(ancTable["CL0107", ])
+anc110 <- t(ancTable["CL0110", ])
+anc116 <- t(ancTable["CL0116", ])
+anc117 <- t(ancTable["CL0117", ])
+anc119 <- t(ancTable["CL0119", ])
+anc121 <- t(ancTable["CL0121", ])
+anc126 <- t(ancTable["CL0126", ])
+anc129 <- t(ancTable["CL0129", ])
+anc141 <- t(ancTable["CL0141", ])
+anc162 <- t(ancTable["CL0162", ])
+anc164 <- t(ancTable["CL0164", ])
+anc175 <- t(ancTable["CL0175", ])
+anc177 <- t(ancTable["CL0177", ])
+anc187 <- t(ancTable["CL0187", ])
+anc188 <- t(ancTable["CL0188", ])
+
+varNames <- grep("anc", ls(), value=TRUE)
+varNames<- varNames[c(1:22)]
+
+for (anc in varNames) {  
+	obj <- get(anc)
+	names(obj) <- row.names(obj)
+	assign(anc, obj, envir=globalenv())
+}
+
+
+name.check(cptree,anc5) # check one table to make sure the names match
+#[1] "OK"
+
+checkModel <- function (tree, df, outdf="name")
+{
+	BM <- fitContinuous(tree, df , model="BM")
+	OU <- fitContinuous(tree, df , model="OU")
+	LA <- fitContinuous(tree, df , model="lambda")
+	KA <- fitContinuous(tree, df , model="kappa")
+	DE <- fitContinuous(tree, df , model="delta")
+	EB <- fitContinuous(tree, df , model="EB")
+	WH <- fitContinuous(tree, df , model="white")
+	TR <- fitContinuous(tree, df , model="trend")
+
+	df <- as.matrix(data.frame(mods=c("BM", "OU", "LA", "KA", "DE", "EB", "WH", "TR"), lnL="NA", aic="NA"))
+	mdf <- df
+	mdf[1,2] <- BM$opt$lnL
+	mdf[2,2] <- OU$opt$lnL
+	mdf[3,2] <- LA$opt$lnL
+	mdf[4,2] <- KA$opt$lnL
+	mdf[5,2] <- DE$opt$lnL
+	mdf[6,2] <- EB$opt$lnL
+	mdf[7,2] <- WH$opt$lnL
+	mdf[8,2] <- TR$opt$lnL
+	mdf[1,3] <- BM$opt$aic
+	mdf[2,3] <- OU$opt$aic
+	mdf[3,3] <- LA$opt$aic
+	mdf[4,3] <- KA$opt$aic
+	mdf[5,3] <- DE$opt$aic
+	mdf[6,3] <- EB$opt$aic
+	mdf[7,3] <- WH$opt$aic
+	mdf[8,3] <- TR$opt$aic
+
+	mdf <- apply(mdf[,2:3],2,as.numeric)
+	row.names(mdf)=df[,1]
+	
+	assign(outdf, mdf, envir=globalenv())
+
+	mdf <- as.data.frame(mdf)
+	mdiff <- max(mdf$lnL)-min(mdf$lnL)
+
+	assign(paste0(outdf,"diff"), mdiff, envir=globalenv())
+}
+
+checkModel(cptree, anc5, outdf="mdf5")
+checkModel(cptree, anc50, outdf="mdf50")
+checkModel(cptree, anc84, outdf="mdf84")
+checkModel(cptree, anc96, outdf="mdf96")
+checkModel(cptree, anc97, outdf="mdf97")
+checkModel(cptree, anc101, outdf="mdf101")
+checkModel(cptree, anc105, outdf="mdf105")
+checkModel(cptree, anc107, outdf="mdf107")
+checkModel(cptree, anc110, outdf="mdf110")
+checkModel(cptree, anc116, outdf="mdf116")
+checkModel(cptree, anc117, outdf="mdf117")
+checkModel(cptree, anc119, outdf="mdf119")
+checkModel(cptree, anc121, outdf="mdf121")
+checkModel(cptree, anc126, outdf="mdf126")
+checkModel(cptree, anc129, outdf="mdf129")
+checkModel(cptree, anc141, outdf="mdf141")
+checkModel(cptree, anc162, outdf="mdf162")
+checkModel(cptree, anc164, outdf="mdf164")
+checkModel(cptree, anc175, outdf="mdf175")
+checkModel(cptree, anc177, outdf="mdf177")
+checkModel(cptree, anc187, outdf="mdf187")
+checkModel(cptree, anc188, outdf="mdf188")
+
+data.frame(mdf5[,1],mdf50[,1],mdf84[,1],mdf96[,1],mdf97[,1],mdf101[,1],mdf105[,1],mdf107[,1],mdf110[,1],mdf116[,1],mdf117[,1],mdf119[,1],mdf121[,1],mdf126[,1],mdf129[,1],mdf141[,1],mdf162[,1],mdf164[,1],mdf175[,1],mdf177[,1],mdf187[,1],mdf188[,1])
+
+# all models here perform comparably
+# since Brownian motion is what is implemented in the ML estimation
+# by fastANC, this seems a reasonable choice
+
+for (anc in varNames) {  
+	obj <- get(anc)
+	obj <- obj[c("A2", "A1", "D5", "kirkii", "kokia")]
+	assign(paste0(anc,""), obj, envir=globalenv())
+}
+
+makeState <- function (tree, df, name="name")
+{
+    GSgradient <- contMap(tree, df, res=1000, plot=FALSE, lwd=2, fsize=1, sig=0)
+    GSgradient$tree$tip.label <- gsub("A2",paste0("G.arboreum, ",round(df[["A2"]])),GSgradient$tree$tip.label)
+    GSgradient$tree$tip.label <- gsub("A1",paste0("G.herbaceum, ",round(df[["A1"]])),GSgradient$tree$tip.label)
+    GSgradient$tree$tip.label <- gsub("D5",paste0("G.raimondii, ",round(df[["D5"]])),GSgradient$tree$tip.label)
+    GSgradient$tree$tip.label <- gsub("kirkii",paste0("G.kirkii, ",round(df[["kirkii"]])),GSgradient$tree$tip.label)
+    GSgradient$tree$tip.label <- gsub("kokia",paste0("K.drynarioides, ",round(df[["kokia"]])),GSgradient$tree$tip.label)
+    GSfit <- fastAnc(tree, df, vars=TRUE, CI=TRUE)
+    gfit <- round(GSfit$ace)
+    assign(paste0("G",name), GSgradient, envir=globalenv())
+    assign(paste0("fit",name),gfit,envir=globalenv())
+}
+
+for (a in varNames) {
+    df <- get(a)
+    makeState(cptree, df, name=a)
+} 
+
+
+png("Figure_grid.anc.png", 10000, 5000, pointsize=12, res=600)
+par(mfrow=c(5,5))
+
+plot(Ganc5, legend=FALSE) + nodelabels(round(fitanc5), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc50, legend=FALSE) + nodelabels(round(fitanc50), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc84, legend=FALSE) + nodelabels(round(fitanc84), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc96, legend=FALSE) + nodelabels(round(fitanc96), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc97, legend=FALSE) + nodelabels(round(fitanc97), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc101, legend=FALSE) + nodelabels(round(fitanc101), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc105, legend=FALSE) + nodelabels(round(fitanc105), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc107, legend=FALSE) + nodelabels(round(fitanc107), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc110, legend=FALSE) + nodelabels(round(fitanc110), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc116, legend=FALSE) + nodelabels(round(fitanc116), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc117, legend=FALSE) + nodelabels(round(fitanc117), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc119, legend=FALSE) + nodelabels(round(fitanc119), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc121, legend=FALSE) + nodelabels(round(fitanc121), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc126, legend=FALSE) + nodelabels(round(fitanc126), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc129, legend=FALSE) + nodelabels(round(fitanc129), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc141, legend=FALSE) + nodelabels(round(fitanc141), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc162, legend=FALSE) + nodelabels(round(fitanc162), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc164, legend=FALSE) + nodelabels(round(fitanc164), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc175, legend=FALSE) + nodelabels(round(fitanc175), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc177, legend=FALSE) + nodelabels(round(fitanc177), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc187, legend=FALSE) + nodelabels(round(fitanc187), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(Ganc188, legend=FALSE) + nodelabels(round(fitanc188), adj=c(-0.3,0.2), frame="none", cex=1)
+plot(0,type='n',axes=FALSE,ann=FALSE)
+plot(0,type='n',axes=FALSE,ann=FALSE)
+plot(0,type='n',axes=FALSE,ann=FALSE)
+
+dev.off()
+
+
+
+
 
