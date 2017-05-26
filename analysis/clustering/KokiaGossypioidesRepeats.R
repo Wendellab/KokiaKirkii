@@ -368,6 +368,10 @@ sum(youngtable[youngtable$greater=="kirkii",]$kirAmount)
 sum(youngtable[youngtable$greater=="kokia",]$kokAmount)
 # [1] 13727.5
 
+siganctable <- sigGkKd
+row.names(siganctable)<-siganctable$Row.names
+siganctable <- siganctable[p001,c(2:5,11)]
+siganctable [siganctable $age=="young",]
 
 ######## ancestral state reconstruction of "very" significant clusters ######## 
 
@@ -552,8 +556,5 @@ plot(0,type='n',axes=FALSE,ann=FALSE)
 plot(0,type='n',axes=FALSE,ann=FALSE)
 
 dev.off()
-
-
-
 
 
