@@ -1,4 +1,3 @@
-Grai	kirkii	kokia
 kirkii
 	 gain
 		 1 : 222
