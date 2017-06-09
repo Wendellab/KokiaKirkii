@@ -1,0 +1,17 @@
+Chr10	gorai	mRNA	24700223	24700467	.	-	.	ID=Gorai.010G121500.1.mrna1;Name=Gorai.010G121500.1;Parent=Gorai.010G121500.1.path1;coverage=98.4;identity=91.9;matches=228;mismatches=17;indels=3;unknowns=0
+Chr05	gorai	mRNA	38706323	38707139	.	-	.	ID=Gorai.010G247700.1.mrna1;Name=Gorai.010G247700.1;Parent=Gorai.010G247700.1.path1;coverage=99.0;identity=95.8;matches=784;mismatches=32;indels=2;unknowns=0
+Chr09	gorai	mRNA	46234718	46236899	.	-	.	ID=Gorai.004G134200.1.mrna1;Name=Gorai.004G134200.1;Parent=Gorai.004G134200.1.path1;coverage=97.0;identity=98.3;matches=289;mismatches=5;indels=0;unknowns=0
+Chr08	gorai	mRNA	43339424	43341106	.	-	.	ID=Gorai.004G134200.1.mrna2;Name=Gorai.004G134200.1;Parent=Gorai.004G134200.1.path2;coverage=100.0;identity=96.7;matches=294;mismatches=9;indels=1;unknowns=0
+Chr13	gorai	mRNA	49346418	49346958	.	-	.	ID=Gorai.013G192300.1.mrna1;Name=Gorai.013G192300.1;Parent=Gorai.013G192300.1.path1;coverage=95.3;identity=90.3;matches=346;mismatches=34;indels=3;unknowns=0
+Chr02	gorai	mRNA	61446224	61446489	.	-	.	ID=Gorai.002G250700.1.mrna1;Name=Gorai.002G250700.1;Parent=Gorai.002G250700.1.path1;coverage=96.4;identity=94.7;matches=252;mismatches=14;indels=0;unknowns=0
+Chr07	gorai	mRNA	60143985	60144638	.	+	.	ID=Gorai.N021800.1.mrna1;Name=Gorai.N021800.1;Parent=Gorai.N021800.1.path1;coverage=100.0;identity=98.4;matches=570;mismatches=9;indels=0;unknowns=0
+Chr05	gorai	mRNA	60558206	60560122	.	-	.	ID=Gorai.005G222900.1.mrna1;Name=Gorai.005G222900.1;Parent=Gorai.005G222900.1.path1;coverage=99.8;identity=93.1;matches=1782;mismatches=93;indels=40;unknowns=0
+Chr02	gorai	mRNA	13231198	13231716	.	+	.	ID=Gorai.005G109700.1.mrna1;Name=Gorai.005G109700.1;Parent=Gorai.005G109700.1.path1;coverage=99.5;identity=96.5;matches=389;mismatches=14;indels=0;unknowns=0
+Chr02	gorai	mRNA	60137947	60138465	.	-	.	ID=Gorai.005G109700.1.mrna2;Name=Gorai.005G109700.1;Parent=Gorai.005G109700.1.path2;coverage=99.5;identity=96.0;matches=387;mismatches=16;indels=0;unknowns=0
+Chr09	gorai	mRNA	15253720	15254243	.	-	.	ID=Gorai.005G109700.1.mrna3;Name=Gorai.005G109700.1;Parent=Gorai.005G109700.1.path3;coverage=99.5;identity=94.9;matches=387;mismatches=16;indels=5;unknowns=0
+Chr09	gorai	mRNA	48307239	48310906	.	-	.	ID=Gorai.005G109700.1.mrna4;Name=Gorai.005G109700.1;Parent=Gorai.005G109700.1.path4;coverage=99.5;identity=94.3;matches=380;mismatches=15;indels=8;unknowns=0
+Chr13	gorai	mRNA	433964	434750	.	-	.	ID=Gorai.011G282300.1.mrna1;Name=Gorai.011G282300.1;Parent=Gorai.011G282300.1.path1;coverage=98.9;identity=97.3;matches=678;mismatches=19;indels=0;unknowns=0
+Chr05	gorai	mRNA	41084054	41084296	.	+	.	ID=Gorai.001G269800.1.mrna1;Name=Gorai.001G269800.1;Parent=Gorai.001G269800.1.path1;coverage=100.0;identity=90.5;matches=220;mismatches=23;indels=0;unknowns=0
+Chr13	gorai	mRNA	7272259	7272939	.	-	.	ID=Gorai.001G156100.1.mrna1;Name=Gorai.001G156100.1;Parent=Gorai.001G156100.1.path1;coverage=99.0;identity=94.9;matches=448;mismatches=23;indels=1;unknowns=0
+Chr03	gorai	mRNA	7762099	7762785	.	-	.	ID=Gorai.001G156100.1.mrna2;Name=Gorai.001G156100.1;Parent=Gorai.001G156100.1.path2;coverage=99.0;identity=94.7;matches=447;mismatches=24;indels=1;unknowns=0
+Chr04	gorai	mRNA	50974185	50975482	.	+	.	ID=Gorai.012G082300.1.mrna1;Name=Gorai.012G082300.1;Parent=Gorai.012G082300.1.path1;coverage=99.1;identity=98.4;matches=317;mismatches=4;indels=1;unknowns=0

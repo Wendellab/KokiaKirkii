@@ -1,0 +1,14 @@
+SEQ_117051	kokia	mRNA	29378	30197	.	-	.	ID=Gorai.010G036200.1.mrna1;Name=Gorai.010G036200.1;Parent=Gorai.010G036200.1.path1;coverage=100.0;identity=94.8;matches=276;mismatches=15;indels=0;unknowns=0
+SEQ_114203	kokia	mRNA	6	342	.	-	.	ID=Gorai.009G384800.1.mrna1;Name=Gorai.009G384800.1;Parent=Gorai.009G384800.1.path1;coverage=100.0;identity=91.4;matches=308;mismatches=25;indels=4;unknowns=0
+SEQ_121784	kokia	mRNA	6120	6456	.	-	.	ID=Gorai.009G384800.1.mrna2;Name=Gorai.009G384800.1;Parent=Gorai.009G384800.1.path2;coverage=100.0;identity=91.4;matches=308;mismatches=25;indels=4;unknowns=0
+SEQ_130237	kokia	mRNA	10781	11117	.	-	.	ID=Gorai.009G384800.1.mrna3;Name=Gorai.009G384800.1;Parent=Gorai.009G384800.1.path3;coverage=100.0;identity=90.8;matches=306;mismatches=27;indels=4;unknowns=0
+SEQ_113718	kokia	mRNA	1678	1877	.	+	.	ID=Gorai.009G029700.1.mrna1;Name=Gorai.009G029700.1;Parent=Gorai.009G029700.1.path1;coverage=100.0;identity=92.6;matches=189;mismatches=11;indels=4;unknowns=0
+SEQ_117172	kokia	mRNA	100471	101523	.	-	.	ID=Gorai.004G292400.1.mrna1;Name=Gorai.004G292400.1;Parent=Gorai.004G292400.1.path1;coverage=100.0;identity=95.2;matches=497;mismatches=25;indels=0;unknowns=531
+SEQ_122666	kokia	mRNA	4692	6094	.	-	.	ID=Gorai.007G316900.1.mrna1;Name=Gorai.007G316900.1;Parent=Gorai.007G316900.1.path1;coverage=100.0;identity=96.6;matches=458;mismatches=16;indels=0;unknowns=0
+SEQ_130189	kokia	mRNA	4692	6094	.	-	.	ID=Gorai.007G316900.1.mrna2;Name=Gorai.007G316900.1;Parent=Gorai.007G316900.1.path2;coverage=100.0;identity=96.6;matches=458;mismatches=16;indels=0;unknowns=0
+SEQ_121544	kokia	mRNA	8	333	.	-	.	ID=Gorai.002G043700.1.mrna1;Name=Gorai.002G043700.1;Parent=Gorai.002G043700.1.path1;coverage=100.0;identity=96.6;matches=229;mismatches=8;indels=0;unknowns=0
+SEQ_128962	kokia	mRNA	27274	27590	.	-	.	ID=Gorai.002G230600.1.mrna1;Name=Gorai.002G230600.1;Parent=Gorai.002G230600.1.path1;coverage=97.9;identity=92.0;matches=219;mismatches=19;indels=0;unknowns=0
+SEQ_126536	kokia	mRNA	154627	154888	.	-	.	ID=Gorai.005G149200.1.mrna1;Name=Gorai.005G149200.1;Parent=Gorai.005G149200.1.path1;coverage=100.0;identity=96.2;matches=150;mismatches=6;indels=0;unknowns=0
+SEQ_126234	kokia	mRNA	269	917	.	+	.	ID=Gorai.008G079000.1.mrna1;Name=Gorai.008G079000.1;Parent=Gorai.008G079000.1.path1;coverage=92.4;identity=95.7;matches=467;mismatches=21;indels=0;unknowns=0
+SEQ_130139	kokia	mRNA	41243	41684	.	+	.	ID=Gorai.001G244100.1.mrna1;Name=Gorai.001G244100.1;Parent=Gorai.001G244100.1.path1;coverage=100.0;identity=91.4;matches=148;mismatches=14;indels=0;unknowns=0
+SEQ_124430	kokia	mRNA	15986	21964	.	-	.	ID=Gorai.006G055600.1.mrna1;Name=Gorai.006G055600.1;Parent=Gorai.006G055600.1.path1;coverage=100.0;identity=96.4;matches=2923;mismatches=104;indels=5;unknowns=0

@@ -1,0 +1,4 @@
+Chr12	gorai	mRNA	27786223	27786669	.	+	.	ID=Gorai.003G134800.1.mrna1;Name=Gorai.003G134800.1;Parent=Gorai.003G134800.1.path1;coverage=100.0;identity=91.1;matches=358;mismatches=34;indels=1;unknowns=0
+Chr13	gorai	mRNA	41450023	41450455	.	-	.	ID=Gorai.011G034100.1.mrna1;Name=Gorai.011G034100.1;Parent=Gorai.011G034100.1.path1;coverage=99.8;identity=93.5;matches=406;mismatches=27;indels=1;unknowns=0
+Chr08	gorai	mRNA	34943066	35003122	.	-	.	ID=Gorai.008G116500.1.mrna1;Name=Gorai.008G116500.1;Parent=Gorai.008G116500.1.path1;coverage=99.2;identity=93.5;matches=781;mismatches=50;indels=4;unknowns=0
+Chr01	gorai	mRNA	32094395	32096001	.	+	.	ID=Gorai.012G149400.1.mrna1;Name=Gorai.012G149400.1;Parent=Gorai.012G149400.1.path1;coverage=100.0;identity=96.3;matches=1552;mismatches=54;indels=6;unknowns=0
