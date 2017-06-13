@@ -29,7 +29,8 @@ DF <- DF[filtered,]
 ######
 
 groups <- DF %>% group_by(`Species Comparison`)
-summary.table <- summarize(groups, Mean = mean(dS), StDev = sd(dS), Median = median(dS))
+dS.summary.table <- summarize(groups, Mean = mean(dS), StDev = sd(dS), Median = median(dS))
+dN.summary.table <- summarize(groups, Mean = mean(dN), StDev = sd(dN), Median = median(dN))
 
 palms.time <- 0.0000000026
 brassica.time <- 0.000000015
