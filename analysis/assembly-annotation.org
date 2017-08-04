@@ -8,63 +8,6 @@
 #+PROPERTY:  header-args :exports results :eval never-export
 #+OPTIONS: ^:nil 
 
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
-
-#+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-#+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
-#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
-
-#+NAME: plotQuality
-#+HEADER: :var fwd="" :var rev=""
-#+BEGIN_SRC R  :results output graphics :width 1024 :height 600
-  library(ShortRead)
-  library(ggplot2)
-  library(reshape2)
-
-  reads <- list('Forward'  = as.character(fwd),
-                'Reverse' = as.character(rev))
-  qaSum <- lapply(reads, qa)
-  perCycleQual <- lapply(qaSum, function(x) x[["perCycle"]]$quality)
-
-  ## quant <- lapply(perCycleQual, function(perCycleQual) {
-  ##                     rbind(melt(t(sapply(by(list(perCycleQual$Score, perCycleQual$Count), perCycleQual$Cycle,
-  ##                                            function(x) quantile(Rle(x[[1]], x[[2]]), c(0.25, 0.5, 0.75))), unlist))),
-  ##                           data.frame(Var1=unique(perCycleQual$Cycle), Var2='Mean',
-  ##                                      value=rowsum(perCycleQual$Score * perCycleQual$Count, perCycleQual$Cycle)/
-  ##                                          rowsum(perCycleQual$Count, perCycleQual$Cycle)))
-  ##                 })
-  ## quant <- melt(quant, id.vars=c('Var1', 'Var2', 'value'))
-  ## colnames(quant) <- c('Cycle', 'Quantile', 'Score', 'Lane');
-
-  mean <- lapply(perCycleQual, function(perCycleQual) {
-                     data.frame(Var1=unique(perCycleQual$Cycle), 
-                                value=rowsum(perCycleQual$Score * perCycleQual$Count, perCycleQual$Cycle)/
-                                    rowsum(perCycleQual$Count, perCycleQual$Cycle))
-                 })
-  mean <- melt(mean, id.vars=c('Var1', 'value'))
-  colnames(mean) <- c('Cycle', 'Score', 'Lane');
-
-
-  perCycleQual <- melt(perCycleQual, measure.vars='Count')[,-c(2,4,5)]
-  colnames(perCycleQual) <- c('Cycle', 'Score', 'Count', 'Lane');
-
-  max <- max(perCycleQual$Score)
-
-  ggplot(perCycleQual, aes(x=Cycle, y=Score)) +
-      geom_tile(aes(fill=Count)) +
-      geom_line(data=mean, aes(group='Mean', color=factor('Mean'))) +
-      scale_fill_gradient(low = "white", high = "steelblue") +
-              facet_grid(Lane ~ .) +
-                      scale_color_manual(name="", breaks=c('Mean'),labels=c('Mean'), values=c('navy')) +
-                          theme(panel.background = element_blank(), 
-                                panel.grid.major = element_blank(),  #remove major-grid labels
-                                panel.grid.minor = element_blank(),  #remove minor-grid labels
-                                plot.background = element_blank())
-
-#+END_SRC
-
 #+NAME: findEncode
 #+BEGIN_SRC perl :var file="" :exports none
   use strict;
