@@ -1,0 +1,1042 @@
+#+TITLE: Kokia Assemble/Annotation
+#+AUTHOR: Tony Arick
+#+TODO: BAD TODO | GOOD QUEUE DONE SKIP
+#+DRAWERS: HIDDEN
+#+OPTIONS: d:RESULTS 
+#+STARTUP: hideblocks align
+
+#+PROPERTY:  header-args :exports results :eval never-export
+#+OPTIONS: ^:nil 
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+
+#+NAME: plotQuality
+#+HEADER: :var fwd="" :var rev=""
+#+BEGIN_SRC R  :results output graphics :width 1024 :height 600
+  library(ShortRead)
+  library(ggplot2)
+  library(reshape2)
+
+  reads <- list('Forward'  = as.character(fwd),
+                'Reverse' = as.character(rev))
+  qaSum <- lapply(reads, qa)
+  perCycleQual <- lapply(qaSum, function(x) x[["perCycle"]]$quality)
+
+  ## quant <- lapply(perCycleQual, function(perCycleQual) {
+  ##                     rbind(melt(t(sapply(by(list(perCycleQual$Score, perCycleQual$Count), perCycleQual$Cycle,
+  ##                                            function(x) quantile(Rle(x[[1]], x[[2]]), c(0.25, 0.5, 0.75))), unlist))),
+  ##                           data.frame(Var1=unique(perCycleQual$Cycle), Var2='Mean',
+  ##                                      value=rowsum(perCycleQual$Score * perCycleQual$Count, perCycleQual$Cycle)/
+  ##                                          rowsum(perCycleQual$Count, perCycleQual$Cycle)))
+  ##                 })
+  ## quant <- melt(quant, id.vars=c('Var1', 'Var2', 'value'))
+  ## colnames(quant) <- c('Cycle', 'Quantile', 'Score', 'Lane');
+
+  mean <- lapply(perCycleQual, function(perCycleQual) {
+                     data.frame(Var1=unique(perCycleQual$Cycle), 
+                                value=rowsum(perCycleQual$Score * perCycleQual$Count, perCycleQual$Cycle)/
+                                    rowsum(perCycleQual$Count, perCycleQual$Cycle))
+                 })
+  mean <- melt(mean, id.vars=c('Var1', 'value'))
+  colnames(mean) <- c('Cycle', 'Score', 'Lane');
+
+
+  perCycleQual <- melt(perCycleQual, measure.vars='Count')[,-c(2,4,5)]
+  colnames(perCycleQual) <- c('Cycle', 'Score', 'Count', 'Lane');
+
+  max <- max(perCycleQual$Score)
+
+  ggplot(perCycleQual, aes(x=Cycle, y=Score)) +
+      geom_tile(aes(fill=Count)) +
+      geom_line(data=mean, aes(group='Mean', color=factor('Mean'))) +
+      scale_fill_gradient(low = "white", high = "steelblue") +
+              facet_grid(Lane ~ .) +
+                      scale_color_manual(name="", breaks=c('Mean'),labels=c('Mean'), values=c('navy')) +
+                          theme(panel.background = element_blank(), 
+                                panel.grid.major = element_blank(),  #remove major-grid labels
+                                panel.grid.minor = element_blank(),  #remove minor-grid labels
+                                plot.background = element_blank())
+
+#+END_SRC
+
+#+NAME: findEncode
+#+BEGIN_SRC perl :var file="" :exports none
+  use strict;
+  use warnings;
+
+  my ($min, $max);
+  $min = $max = chr(64);
+
+  open(my $fh, '-|', "zcat $file");
+  while(<$fh>){
+      next if($.%4);
+      last if($.>4000);
+      
+      chomp;
+      ($min, $max) = (sort ($min, $max, split //))[0,-1];    
+  }
+
+  ($min, $max) = map {ord} ($min, $max);
+  return '33' if($min < 64);
+  return '64'
+#+END_SRC
+
+#+NAME: SRAdb :eval yes
+#+BEGIN_SRC sh :var acc="SRX204794" :exports none
+wget -O - "http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&db=sra&rettype=runinfo&term=$acc" | 
+  sed -e 1d -e 's/,.*//' | 
+  perl -lane '{chomp; push @L, $_;}END{print join(",", @L)};'
+#+END_SRC
+
+* Libraries
+#+NAME:kokia_dna
+| Library            | Type | Encoding | Forward Read                                               | Reverse Read                                               |
+|--------------------+------+----------+------------------------------------------------------------+------------------------------------------------------------|
+| DL11a.hiseq        | PE   |       64 | raw/kokia/hiseq/DL11a/FCC78FTACXX_L1_Index_GCCAAT_1.fq.gz  | raw/kokia/hiseq/DL11a/FCC78FTACXX_L1_Index_GCCAAT_2.fq.gz  |
+| DL11b.hiseq        | PE   |       64 | raw/kokia/hiseq/DL11b/FCC78FTACXX_L1_Index_CTTGTA_1.fq.gz  | raw/kokia/hiseq/DL11b/FCC78FTACXX_L1_Index_CTTGTA_2.fq.gz  |
+| DL11a.miseq.150501 | PE   |       33 | raw/kokia/miseq/DL11a/150501/DL11a_S1_L001_R1_001.fastq.gz | raw/kokia/miseq/DL11a/150501/DL11a_S1_L001_R2_001.fastq.gz |
+| DL11a.miseq.150505 | PE   |       33 | raw/kokia/miseq/DL11a/150505/DL11a_S1_L001_R1_001.fastq.gz | raw/kokia/miseq/DL11a/150505/DL11a_S1_L001_R2_001.fastq.gz |
+| DL11b.miseq.150501 | PE   |       33 | raw/kokia/miseq/DL11b/150501/DL11b_S2_L001_R1_001.fastq.gz | raw/kokia/miseq/DL11b/150501/DL11b_S2_L001_R2_001.fastq.gz |
+| DL11b.miseq.150505 | PE   |       33 | raw/kokia/miseq/DL11b/150505/DL11b_S2_L001_R1_001.fastq.gz | raw/kokia/miseq/DL11b/150505/DL11b_S2_L001_R2_001.fastq.gz |
+
+
+* Trimmomatic
+:PROPERTIES:
+:ID:       819e5711-50d1-4e44-8200-1f8457e158af
+:END:
+#+BEGIN_SRC sh :shebang "#!/bin/bash" :tangle trim/trimmomatic.pbs
+  #PBS -N trimmomatic
+  #PBS -l nodes=1:ppn=20
+  #PBS -l walltime=48:00:00
+#+END_SRC
+#+BEGIN_SRC sh :tangle trim/trimmomatic.pbs :var libs=libtable :var DIR=(file-name-directory buffer-file-name)
+  cd $DIR
+
+  TRIMER=/usr/local/igbb/trimmomatic/trimmomatic-0.32.jar
+  ADAPTERS=/usr/local/igbb/trimmomatic/adapters/all.fa
+
+  TRIM="$DIR/trim"
+
+  while read -a lib; do
+
+      TRM_PE_R1=$TRIM/${lib[0]}.PE.R1.fq.gz
+
+      if [ "${lib[1]}" = 'PE' ] ;then 
+
+          TRM_SE_R1=$TRIM/${lib[0]}.SE.R1.fq.gz
+      
+          TRM_PE_R2=$TRIM/${lib[0]}.PE.R2.fq.gz
+          TRM_SE_R2=$TRIM/${lib[0]}.SE.R2.fq.gz
+      fi
+
+      echo ${lib[0]} ${lib[1]} ${lib[2]} $TRIM
+
+      java -jar $TRIMER ${lib[1]} -threads $PBS_NUM_PPN -phred${lib[2]} \
+          ${lib[3]} ${lib[4]} $TRM_PE_R1 $TRM_SE_R1 $TRM_PE_R2 $TRM_SE_R2 \
+          ILLUMINACLIP:$ADAPTERS:2:30:15 LEADING:28 TRAILING:28 SLIDINGWINDOW:8:28 SLIDINGWINDOW:1:10 MINLEN:85 TOPHRED33 \
+          &> $TRIM/${lib[0]}.log
+
+  done <<< "$libs"
+
+#+END_SRC
+** Summary
+#+BEGIN_SRC sh :results raw
+echo "|Library|Raw|Paired|Forward|Reverse|Dropped|"
+echo "|--"
+find trim -name '*.log' | xargs grep 'Input Read Pairs' | sed -e 's#.*/#\|#' -e 's/\.log:[^:]*: /\|/' -e 's/ [^:)0-9]*: /\|/g'
+#+END_SRC
+
+#+RESULTS:
+| Library            |       Raw | Paired             | Forward          | Reverse         | Dropped          |
+|--------------------+-----------+--------------------+------------------+-----------------+------------------|
+| DL11b.miseq.150501 |   4898277 | 3026355 (61.78%)   | 1069141 (21.83%) | 143027 (2.92%)  | 659754 (13.47%)  |
+| DL11b.miseq.150505 |  13042878 | 6816961 (52.27%)   | 3073533 (23.56%) | 529457 (4.06%)  | 2622927 (20.11%) |
+| DL11a.hiseq        | 130983519 | 107260737 (81.89%) | 9977566 (7.62%)  | 6511844 (4.97%) | 7233372 (5.52%)  |
+| DL11b.hiseq        |  48127768 | 35377873 (73.51%)  | 7093947 (14.74%) | 1989253 (4.13%) | 3666695 (7.62%)  |
+| DL11a.miseq.150501 |  14491831 | 9122720 (62.95%)   | 3269076 (22.56%) | 460472 (3.18%)  | 1639563 (11.31%) |
+| DL11a.miseq.150505 |   7754973 | 4348676 (56.08%)   | 1773193 (22.87%) | 368852 (4.76%)  | 1264252 (16.30%) |
+|--------------------+-----------+--------------------+------------------+-----------------+------------------|
+| total              | 219299246 | 165953322          | 26256456         | 10002905        | 17086563         |
+
+* Assembly
+
+:PROPERTIES:
+:ID:       b8a6f25c-bc48-44e5-9cab-23b315eb2b0c
+:END:
+#+HEADER: :shebang #!/bin/bash :tangle analysis/assemble/abyss/kokia/run.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N Assemble_By5_Second -l nodes=1:ppn=20 -l walltime=48:00:00 -t 65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200
+#+BEGIN_SRC sh :var libs=kokia_dna[,0] :var DIR=(file-name-directory buffer-file-name)
+swsetup (){    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`; }
+swsetup intel-mpi
+swsetup bwa
+
+PATH=/usr/local/igbb/abyss-2.0.1/bin:$PATH
+kmer=$PBS_ARRAYID
+lmer=$kmer
+if [ $lmer -gt 40 ]; then lmer=40; fi
+
+TRIM="$DIR/trim"
+OUT="$DIR/analysis/assemble/abyss/kokia/"
+
+mkdir $OUT/$kmer
+cd $OUT/$kmer
+
+#vmstat -n -SM 60 > $PBS_JOBNAME.memory.txt &
+
+PE_LIBS=()
+SE_FILES=()
+PE_FILES=()
+
+IFS=$'\t'
+while read lib; do
+    SE_FILES+=("$TRIM/${lib}.SE.R1.fq.gz");
+    if [ -e "$TRIM/$lib.PE.R1.fq.gz" ]; then
+        SE_FILES+=("$TRIM/${lib}.SE.R2.fq.gz")
+        PE_FILES+=("$lib='$TRIM/${lib}.PE.R1.fq.gz $TRIM/${lib}.PE.R2.fq.gz'")
+        PE_LIBS+=($lib)
+    fi
+done <<<"$libs";
+
+
+echo abyss-pe np=20 k=$kmer l=$lmer name=$PBS_ARRAYID  \
+     se="'${SE_FILES[@]}'" \
+     lib="'${PE_LIBS[@]}'" \
+     long=long1 long1="$DIR/analysis/rnaseq_assembly/megahit/kokia/megahit_out/final.contigs.fa.gz" \
+     ${PE_FILES[@]} | sh 
+
+
+#+END_SRC
+
+#+HEADER: :shebang #!/bin/bash :tangle analysis/assemble/abyss/kokia/sealer.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N Assemble_By5_Second -l nodes=1:ppn=20 -l walltime=48:00:00 -t 65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200
+#+BEGIN_SRC sh :var libs=kokia_dna[,0] :var DIR=(file-name-directory buffer-file-name)
+swsetup (){    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`; }
+swsetup intel-mpi
+swsetup bwa
+
+PATH=/usr/local/igbb/abyss-2.0.1/bin:$PATH
+kmer=$PBS_ARRAYID
+
+OUT="$DIR/analysis/assemble/abyss/kokia/"
+cd $OUT/$kmer
+
+abyss-sealer -vv -j20 -P10 -b50G -o $kmer.sealed1 -S $kmer-long-scaffs.fa \
+     -k100 -k90 -k80 -k70 -k60 -k50 -k40 -k30 \
+     $DIR/trim/DL11b.miseq.PE.R{1,2}.fq.gz
+
+abyss-sealer -vv -j20 -P10 -b50G -o $kmer.sealed2 -S $kmer.sealed1_scaffold.fa \
+    -k100 -k90 -k80 -k70 -k60 -k50 -k40 -k30 \
+    $DIR/trim/DL11a.miseq.PE.R{1,2}.fq.gz
+
+java -Xmx250G -jar ../bin/pilon-1.22.jar \
+    --genome run2_scaffold.fa \
+    --bam DL11a.sort.bam \
+    --bam DL11b.sort.bam \
+    --output polish \
+    --outdir . \
+    --changes \
+    --threads 8
+
+#+END_SRC
+
+#+HEADER: :shebang #!/bin/bash :tangle analysis/quast/kokia.sh  :mkdirp yes
+#+HEADER: :prologue #PBS -N Assemble_By5_Second -l nodes=1:ppn=20 -l walltime=48:00:00 
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+swsetup ()
+{
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+}
+
+swsetup python
+PATH=$PATH:$DIR/bin/quast-4.5/
+
+quast.py -o $DIR/analysis/quast/ -t 4 -e -s analysis/assemble/abyss/kokia/kokia_final_scaffolds.fa
+#+END_SRC
+
+* RepeatExplorer
+:PROPERTIES:
+:ID:       d20d45cc-8b77-400a-9d40-f426116009c5
+:END:
+
+
+file = seqClust (md5= e262a9d79951f783352f8ec97731c909); this file is the
+clustering input we used for the diploid clustering (paper first authored by
+Simon); it should already be sampled properly for A- and D- cottons. These are
+sampled to 95nt.
+
+file = kirkii_150nt_use_this_one (md5= 9e320d2af21374a6addfa60d6da1a4ed); file
+of 150nt reads from G. kirkii (genome size =587 Mbp; Wendel, Genetica, 2002)
+
+Kokia; genome size (GS) = 611 Mbp (C-value database) BUT original reference
+(Wendel, Genetica, 2002) has it listed as 2C = 1.2pg (which is 586.8 Mbp 1C).
+Let's use the original estimate.
+
+
+For clustering: please concatenate the seqClust file with 1% subsamples of each
+kirkii and Kokia (my math below, feel free to check)
+
+1% genome size (95nt reads)
+	Kokia = 61,789 reads
+	kirkii = 61,789 reads
+
+
+
+
+
+#+HEADER: :shebang #!/bin/bash :tangle analysis/clustering/sample.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N Sample -l nodes=1:ppn=20 -l walltime=48:00:00 
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+PATH=$PATH:$DIR/bin/reservoir_sample
+
+cp $DIR/analysis/clustering/seqClust.fa $DIR/analysis/clustering/sample.fa
+reservoir_sample -l 95 -n kirkii -s 61789 $DIR/analysis/clustering/kirkii_150nt_use_this_one.gz >> $DIR/analysis/clustering/sample.fa
+reservoir_sample -l 95 -n kokia_ -s 61789 $DIR/trim/DL11a.hiseq.PE.R1.fq.gz >> $DIR/analysis/clustering/sample.fa
+
+#+END_SRC
+
+
+#+HEADER: :shebang "#!/bin/bash" :mkdirp t :tangle analysis/clustering/cluster.sh
+#+HEADER: :prologue #PBS -N RepeatExplorer -l nodes=1:ppn=20 -l walltime=48:00:00 
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+export R_LIBS=$DIR/bin/repeatexplorer/Rlib:$R_LIBS
+
+PATH="$PATH:$DIR/bin/repeatexplorer"
+PATH="$PATH:$DIR/bin/repeatexplorer/blast-2.2.26/bin"
+PATH="$PATH:$DIR/bin/repeatexplorer/ImageMagick-6.9.1-10/bin"
+PATH="$PATH:/usr/local/R-3.1.2/bin"
+export PATH
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/bin/repeatexplorer/ImageMagick-6.9.1-10/lib/
+export LD_LIBRARY_PATH
+
+swsetup () { eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`; }
+swsetup repeatmasker
+swsetup bioperl
+
+cd $DIR/analysis/clustering/ || exit
+
+if [ -d $DIR/analysis/clustering/seqClust ]; then rm -R $DIR/analysis/clustering/seqClust; fi
+
+exec 3>&1 4>&2 >$PBS_JOBID.log 2>&1
+
+while sleep 30; do find . -type d -empty -print -exec touch {}/.empty \;; done &
+WATCH=$!
+
+time seqclust_cmd.py -s $DIR/analysis/clustering/sample.fa \
+    -d All -v . -k  $DIR/db/RBplantsANDcotton.21.08.fasta -f 6
+
+kill $WATCH
+exec 1>&3 2>&4
+#+END_SRC
+
+#+HEADER: :shebang "#!/bin/bash" :mkdirp t :tangle analysis/clustering/cluster_continue.sh
+#+HEADER: :prologue #PBS -N RepeatExplorer -l nodes=1:ppn=20 -l walltime=48:00:00 
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+export R_LIBS=$DIR/bin/repeatexplorer/Rlib:$R_LIBS
+
+PATH="$PATH:$DIR/bin/repeatexplorer"
+PATH="$PATH:$DIR/bin/repeatexplorer/blast-2.2.26/bin"
+PATH="$PATH:$DIR/bin/repeatexplorer/ImageMagick-6.9.1-10/bin"
+PATH="$PATH:/usr/local/R-3.1.2/bin"
+export PATH
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/bin/repeatexplorer/ImageMagick-6.9.1-10/lib/
+export LD_LIBRARY_PATH
+
+swsetup () { eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`; }
+swsetup repeatmasker
+swsetup bioperl
+
+cd $DIR/analysis/clustering/ || exit
+
+exec 3>&1 4>&2 >$PBS_JOBID.log 2>&1
+
+while sleep 30; do find . -type d -empty -print -exec touch {}/.empty \;; done &
+WATCH=$!
+
+time seqclust_continue.py -s $DIR/analysis/clustering/sample.fa \
+    -d None -v . -k  $DIR/db/RBplantsANDcotton.21.08.fixedDec2016.fasta -f 6
+
+
+kill $WATCH
+exec 1>&3 2>&4
+#+END_SRC
+
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+  PATH=$PATH:/usr/local/gnu/bin
+  find $DIR/analysis/clustering/seqClust/clustering/clusters -name '*_domains.csv' |\
+      parallel -k --tag awk "'NR!=1 {if(\$3 == \"NA\"){print \$1}else{print \$3}}'" {} '|' sort -u |\
+      sed -e 's#[^\t]*/##' -e 's/_domains.csv//' | tr -d '"' | sort -n |\
+      awk 'length(head)==0 {printf "Cluster\tLineage"} head != $1 {printf "\n%s\t%s", $1,$2} head==$1{printf ",%s", $2} {head=$1}' |\
+      paste - $DIR/analysis/clustering/seqClust/clustering/comparativeAnalysis_table_clusters.csv \
+            > $DIR/analysis/clustering/seqClust/clustering/comparative_analysis.domains.txt
+
+  # mv $DIR/analysis/clustering/{seqClust/clustering,}
+  # tar -C $DIR/analysis/clustering/ -cvzf $DIR/analysis/clustering/clusters.tar.gz clustering/ summary/ comparative_analysis.domains.txt
+#+END_SRC
+
+#+RESULTS:
+
+
+#+HEADER: :shebang "#!/usr/bin/perl" :results output :tangle bin/annotate.pl
+#+BEGIN_SRC perl :var DIR=(file-name-directory buffer-file-name)
+use strict;
+use warnings;
+
+use Data::Dumper;
+
+my ($cluster_file, $results_file) = qw#analysis/clustering/seqClust/clustering/RM-custom_output_tablesummary.csv file#;
+
+open(my $cluster_fh, $cluster_file);
+
+my $header = <$cluster_fh>;
+chomp $header;
+$header = [split /\t/, $header];
+splice @$header, 0, 3;
+
+while(<$cluster_fh>){
+     next unless s/^hits //;
+     chomp;
+
+     my ($cluster, $length, $sum, $tmp) = split /\t/, $_, 5;
+     my $repeats = {};
+     @$repeats{@$header} = split /\t/, $tmp;
+
+     print Dumper $repeats;
+
+     my $sort_header = [sort {$repeats->{$b} <=> $repeats->{$a}} keys %$repeats];
+
+     print($repeats->{$sort_header->[0]}/$sum, ' ', $repeats->{$sort_header->[0]}/$repeats->{$sort_header->[1]});{
+          print $cluster, ' ', $sort_header->[0];
+     }
+     exit;
+}
+close($cluster_fh);
+
+#+END_SRC
+
+#+RESULTS:
+
+** TE Dating
+:PROPERTIES:
+:ID:       f4ef8192-485a-48f6-ba53-bc56a9cda921
+:END:
+
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+PATH=$PATH:$DIR/bin:$DIR/bin/repeatexplorer/tgicl_linux/bin
+
+find $DIR/analysis/clustering/seqClust/clustering/clusters/ -name reads.fas |
+while read file; do
+     formatdb -p F -i $file
+     cat $file |
+          parallel --block 100k --recstart '>' --pipe \
+               mgblast -d $file -p85 -W18 -UT -X40 -KT -JF -F '"m D"' -v100000000 -b100000000 -D4 -C 55 -H30 |
+        TE_dating_histogram.pl > $(dirname $file)/TE_dating.hist
+done
+#+END_SRC
+
+
+#+HEADER: :shebang "#!/usr/local/R-3.2.3/bin/Rscript" :mkdirp t :tangle bin/TE_dating.regression.R
+#+BEGIN_SRC R 
+args <- commandArgs(trailingOnly = TRUE)
+
+d<-read.table(args[1])
+line<-lm(V2~V1, data=d)
+quad<-lm(V2~poly(V1,2), data=d)
+
+l <- quad
+category <- 0
+
+if(BIC(line) < BIC(quad)){
+    l <- line
+    if(l$coefficients[2] > 0.001){
+        category <- 1
+    } else if (l$coefficients[2] < 0.001 && l$coefficients[2] > -0.001)  {
+        category <- 2
+    } else if (l$coefficients[2] < -0.001) {
+        category <- 3
+    }
+} else {
+    opti <- d[which.max(fitted(l)),1]
+    
+    if(l$coefficients[3] > 0){
+        category <- 4
+        if(l$coefficients[2]<0){
+            category <- "4*"
+        }
+    } else  {
+        if(opti < 99) {
+            category <- 5
+        } else {
+            category <- 6
+        }
+
+    }
+
+}
+
+cat(sprintf("%f\t%f\t%f\t%d\t%s\n",
+            l$coefficients[1],
+            l$coefficients[2],
+            l$coefficients[3],
+            d[which.max(fitted(l)),1],
+            category))
+#+END_SRC
+
+#+HEADER: :shebang "#!/usr/local/R-3.2.3/bin/Rscript" :mkdirp t :tangle bin/TE_dating.draw.R
+#+BEGIN_SRC R 
+
+args <- commandArgs(trailingOnly = TRUE)
+
+d<-read.table(args[1])
+line<-lm(V2~V1, data=d)
+quad<-lm(V2~poly(V1,2), data=d)
+
+l <- quad
+
+if(BIC(line) < BIC(quad)){
+   l <- line
+}
+png(args[2])
+plot(d)
+lines(d$V1, fitted(l))
+dev.off()
+#+END_SRC
+
+#+BEGIN_SRC sh
+find $DIR/analysis/clustering/seqClust/clustering/clusters/ -name TE_dating.hist |
+    sort |
+    parallel -j1 --tag  ./bin/TE_dating.regression.R {} |
+    sed -e 's#/TE_dating.hist##' -e 's#.*/dir_##' |
+    awk 'BEGIN {print "Cluster\ta\tb\tc\tOptimum\tCategory"} 
+        {print}' OFS="\t" \
+        > analysis//clustering/TE_dating.txt
+
+
+#+END_SRC
+
+# Cluster cutoff graph
+#+BEGIN_SRC R
+library(ggplot2)
+
+data <- read.delim("comparativeAnalysis_table_clusters_counts.csv")
+data$size <- rowSums(data[,-1])
+data$percent <- cumsum(data$size)/sum(data$size)
+
+ggplot(data, aes(x=cluster, y=percent)) +
+     geom_line() +
+     geom_vline(xintercept=274, color='red') +
+     scale_x_log10() + scale_y_log10()
+ggsave('dim_returns.cutoff.png')
+#+END_SRC
+
+* RNAseq-assembly
+#+NAME:rna_data
+| species | forward                                               | reverse                                               |
+|---------+-------------------------------------------------------+-------------------------------------------------------|
+| kokia   | raw/kokia/rna/KoKia-RNAseq_L3_389.R1.clean.fastq.gz   | raw/kokia/rna/KoKia-RNAseq_L3_389.R2.clean.fastq.gz   |
+| kirkii  | raw/kirkii/rna/KirKii-RNAseq_L3_388.R1.clean.fastq.gz | raw/kirkii/rna/KirKii-RNAseq_L3_388.R1.clean.fastq.gz |
+
+** Trinity
+#+COMMENT: $species is the line number of species in the rna_data table
+#+HEADER: :shebang #!/bin/bash :tangle analysis/rnaseq_assembly/trinity/run.pbs :mkdirp yes
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var rna=rna_data
+# set up PATH and get line from rna_data table
+PATH=$PATH:/usr/local/igbb/trinityrnaseq-2.2.0/:/usr/local/igbb/bowtie-1.1.2/
+swsetup gcc-4.9
+read -a line < <(sed "${species}q;d" <<< "$rna")
+echo ${line[0]}
+
+# make and move to output directory
+mkdir -p $DIR/analysis/rnaseq_assembly/trinity/${line[0]}
+trinity_dir=$DIR/analysis/rnaseq_assembly/trinity/${line[0]}
+cd $trinity_dir
+
+# run Trinity
+Trinity --seqType fq --max_memory 200G --left $DIR/${line[1]}  --right $DIR/${line[2]} --CPU 8
+#+END_SRC
+
+** Megahit
+#+COMMENT: $species is the line number of species in the rna_data table
+#+HEADER: :shebang #!/bin/bash :tangle analysis/rnaseq_assembly/megahit/run.pbs :mkdirp yes
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var rna=rna_data
+swsetup()
+  {
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+ 
+# set up PATH and get line from rna_data table
+PATH=$PATH:/scratch/thrash/install/megahit
+swsetup gcc-4.9
+read -a line < <(sed "${species}q;d" <<< "$rna")
+echo ${line[0]}
+
+mkdir -p $DIR/analysis/rnaseq_assembly/megahit/${line[0]}
+cd $DIR/analysis/rnaseq_assembly/megahit/${line[0]}
+
+megahit -t 8 -m 0.4 -1 $DIR/${line[1]} -2 $DIR/${line[2]}
+
+#+END_SRC
+* Annotation
+** Methods
+Several programs were used to generate input for MAKER (v2.31.6) [2] . Trinity (v2.2.0) [1] was used to create 
+an RNASeq-assembly that was passed to MAKER as ESTs. The genome was filtered to remove sequences less than 1kb. 
+With the filtered genome, Genemark (v4.3.3) [3] was used to generate gene predictions and BUSCO (v2) [4] was used 
+to train Augustus and create a Snap model. The first pass of MAKER was run using the output from Genemark, 
+the Snap model created from BUSCO's output, the Augustus [5] model trained by BUSCO, the RNASeq-assembly from Trinity 
+as ESTs, and UniProt as a protein database.
+
+After the first pass of MAKER was complete, the annotations generated by MAKER were passed to autoAug.pl, a script
+included with Augustus that trains Augustus. These annotations were also used to generate a second Snap model. MAKER
+was run again, replacing the Snap model and Augustus model from BUSCO with the models generated from the output of the
+first pass of MAKER.
+
+References
+
+[1] Grabherr, M., Haas, B., Yassour, M., Levin, J., Thompson, D., Amit, I., Adiconis, X., Fan, L., Raychowdhury, R., and Zeng, Q. et al. (2011). Full-length transcriptome assembly from RNA-Seq data without a reference genome. Nature Biotechnology 29, 644-652.
+
+[2] Holt, C., and Yandell, M. (2011). MAKER2: an annotation pipeline and genome-database management tool for second-generation genome projects. BMC Bioinformatics 12, 491.
+
+[3] Lomsadze, A. (2005). Gene identification in novel eukaryotic genomes by self-training algorithm. Nucleic Acids Research 33, 6494-6506.
+
+[4] Simão, F., Waterhouse, R., Ioannidis, P., Kriventseva, E., and Zdobnov, E. (2015). BUSCO: assessing genome assembly and annotation completeness with single-copy orthologs. Bioinformatics 31, 3210-3212.
+
+[5] Stanke, M., and Waack, S. (2003). Gene prediction with a hidden Markov model and a new intron submodel. Bioinformatics 19, ii215-ii225.
+
+** Set Up
+#+NAME: genome_paths
+| species | path                 |
+|---------+----------------------|
+| kirkii  | db/G.kirkii.v1.fasta |
+
+| kokia | analysis/assemble/abyss/kokia/kokia_final_scaffolds.fa |
+
+
+
+
+#+NAME: minimum_length
+| 1000 |
+
+** Preparation
+*** Genome filtering
+#+HEADER: :shebang #!/bin/bash :tangle filter.sh :mkdirp yes
+#+BEGIN_SRC sh :var genomes=genome_paths :var minimum_length=minimum_length :var DIR=(file-name-directory buffer-file-name) :results output verbatim
+  while read -a lib; do 
+    echo $lib
+    OUT_PATH=$(dirname ${lib[1]})
+    awk 'BEGIN {count=1} /^>/ {print ">SEQ_"count; count++} !/^>/ {print}' $DIR/${lib[1]} > $OUT_PATH/${lib[0]}.renamed.fa
+    echo "/home/maa146/bin/fasta_filter.pl $OUT_PATH/${lib[0]}.renamed.fa -length=$minimum_length > $OUT_PATH/${lib[0]}.filtered.fa" | sh
+    #rm $OUT_PATH/${lib[0]}.renamed.fa
+    ls -lh $OUT_PATH/${lib[0]}.filtered.fa
+  done <<< "$genomes";
+#+END_SRC
+
+#+RESULTS:
+: kirkii
+: -rw-r----- 1 thrash igbb 512M Jun  9 13:30 db/kirkii.filtered.fa
+
+*** Genemark
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/genemark/run.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N genemark -l nodes=1:ppn=20 -l walltime=48:00:00
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name) :var min_contig=minimum_length
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/genemark-es-et_4.3.3/lib/perl5/ 
+  read -a lib < <(sed "${species}q;d" <<< "$genomes")
+  IN_PATH=$DIR/$(dirname ${lib[1]})
+  mkdir -p $DIR/analysis/annotation/genemark/${lib[0]}
+  cd $DIR/analysis/annotation/genemark/${lib[0]}
+  /usr/local/igbb/genemark-es-et_4.3.3/gmes_petap.pl --ES --cores 4 --min_contig $min_contig --sequence $IN_PATH/${lib[0]}.filtered.fa
+#+END_SRC
+
+*** BUSCO
+**** BUSCO setup
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/busco/setup.pbs :mkdirp yes
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+  # set up directories and symlinks
+  mkdir -p $DIR/analysis/annotation/busco/augustus_setup
+  cp -r /usr/local/igbb/augustus-3.2.3/config $DIR/analysis/annotation/busco/augustus_setup/
+  ln -s /usr/local/igbb/augustus-3.2.3/bin $DIR/analysis/annotation/busco/augustus_setup/bin
+  ln -s /usr/local/igbb/augustus-3.2.3/bin $DIR/analysis/annotation/busco/augustus_setup/src
+  ln -s /usr/local/igbb/augustus-3.2.3/scripts $DIR/analysis/annotation/busco/augustus_setup/scripts  
+  
+  # download plant database
+  mkdir $DIR/analysis/annotation/busco/db
+  cd $DIR/analysis/annotation/busco/db
+  wget http://busco.ezlab.org/datasets/embryophyta_odb9.tar.gz
+  tar xf embryophyta_odb9.tar.gz
+  rm embryophyta_odb9.tar.gz
+#+END_SRC
+
+#+RESULTS:
+
+**** BUSCO
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/busco/run.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N busco -l nodes=1:ppn=20 -l walltime=48:00:00
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var genomes=genome_paths
+  swsetup()
+  {
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup python
+  swsetup gcc-4.9
+  swsetup boost-155
+
+  PATH=$PATH:$DIR/analysis/annotation/busco/augustus_setup/scripts/:/usr/local/igbb/hmmer3.1b2/:/usr/local/igbb/blast-2.5.0+/bin/:/usr/local/igbb/augustus-3.2.3/bin
+  export AUGUSTUS_CONFIG_PATH=$DIR/analysis/annotation/busco/augustus_setup/config
+  
+  read -a lib < <(sed "${species}q;d" <<< "$genomes")
+  IN_PATH=$DIR/$(dirname ${lib[1]})
+  cd $DIR/analysis/annotation/busco
+  /usr/local/igbb/busco_v2/BUSCO.py -i $IN_PATH/${lib[0]}.filtered.fa -l $DIR/analysis/annotation/busco/db/embryophyta_odb9/ -m genome --long -c 8 -o ${lib[0]} -r -t tmp_${lib[0]}
+#+END_SRC
+
+**** copy models to augustus
+#+COMMENT: copy BUSCO augustus parameters to config folder
+#+HEADER: :shebang #!/bin/bash :mkdirp yes
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :results output verbatim
+  for file in $(find analysis/annotation/busco/run_*/augustus_output/retraining_parameters -type f); do
+    BUSCO_PATH=$(dirname $file)
+    species=$(cut -f4 -d'/' <<< $BUSCO_PATH | sed -e 's/run_//')
+    mkdir $DIR/analysis/annotation/busco/augustus_setup/config/species/$species
+    for augustus_output in $(ls -1 $DIR/analysis/annotation/busco/run_$species/augustus_output/retraining_parameters/); 
+      do bn=$(basename $augustus_output); 
+      new_name=$(echo $bn | sed -e 's/BUSCO_//;s/_[0-9]*_/_/'); 
+      cp $DIR/analysis/annotation/busco/run_$species/augustus_output/retraining_parameters/$augustus_output $DIR/analysis/annotation/busco/augustus_setup/config/species/$species/$new_name; 
+      cp $DIR/analysis/annotation/busco/run_$species/augustus_output/retraining_parameters/$augustus_output $DIR/analysis/annotation/busco/augustus_setup/config/species/$species/$augustus_output; 
+    done
+  done;
+  find $DIR/analysis/annotation/busco/augustus_setup/config/species/k* -name "BUSCO*" | cut -f12 -d'/' | uniq
+#+END_SRC
+
+#+RESULTS:
+: kirkii
+
+**** make SNAP
+#+COMMENT: BUSCO to SNAP
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/busco/busco_to_snap.pbs :mkdirp yes
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var genomes=genome_paths :results output verbatim
+  swsetup()
+  {
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup snap
+  swsetup bioperl
+  cd $DIR/analysis/annotation/busco
+  for file in $(find run* -maxdepth 1 -name 'short_summary*'); do
+    BUSCO_PATH=$(dirname $file)
+    species=$(sed -e 's/run_//' <<< $BUSCO_PATH)
+    GENOME=$(grep $species <<< "$genomes" | awk '{print $2}')
+    cd $BUSCO_PATH
+    echo $BUSCO_PATH
+    echo $species
+    echo $GENOME
+    mkdir -p snap
+    cat augustus_output/gffs/* > $species.combined.gff
+    perl /usr/local/igbb/busco_v2/scripts/gff3_to_zff.pl < $species.combined.gff > snap/$species.ann
+    cd snap
+    grep '^>' $species.ann | tr -d '>' > $species.seqs2keep
+    perl /usr/local/igbb/busco_v2/scripts/fasta_sort.pl $species.seqs2keep < $DIR/$GENOME > $species.dna
+    fathom $species.ann $species.dna -gene-stats > gene-stats.log 2>&1
+    fathom $species.ann $species.dna -validate > validate.log 2>&1
+    athom $species.ann $species.dna -categorize 1000 > categorize.log 2>&1
+    fathom uni.ann uni.dna -export 1000 -plus > uni-plus.log 2>&1
+    mkdir -p params
+    cd params
+    forge ../export.ann ../export.dna > ../forge.log 2>&1
+    cd ..
+    hmm-assembler.pl $species params/ > $species.hmm
+    cd $DIR/analysis/annotation/busco
+  done;
+  find $DIR/analysis/annotation/busco/run*/snap -name '*.hmm' | grep -v embryophyta_odb9
+#+END_SRC
+
+
+#+RESULTS:
+: run_kirkii
+: kirkii
+: db/G.kirkii.v1.fasta
+
+** set up maker
+#+COMMENT: Split a genome into pieces for annotation by MAKER
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/split_genomes/split.sh :mkdirp yes
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name) :results output verbatim
+  species=1
+  read -a lib < <(sed "${species}q;d" <<< "$genomes")
+  GENOME=$DIR/$(dirname ${lib[1]})/${lib[0]}.filtered.fa
+  echo $GENOME
+  reads_in_filter=$(grep -c '>' $GENOME)
+  mkdir -p $DIR/analysis/annotation/split_genomes/${lib[0]}
+  cd $DIR/analysis/annotation/split_genomes/${lib[0]}
+  /home/maa146/bin/fasta-splitter.pl --n-parts 100 --measure all $GENOME
+  num_parts=$(ls -1 $DIR/analysis/annotation/split_genomes/${lib[0]} | wc -l)
+  printf "|%s|%s|%d|%d|\n" "${lib[0]}" "${lib[1]}" "$part_size" "$num_parts" >&2
+#+END_SRC
+
+#+RESULTS:
+: /work/thrash/shane.kokia//analysis/assemble/abyss/kokia/kokia.filtered.fa
+: /work/thrash/shane.kokia//analysis/assemble/abyss/kokia/kokia.filtered.fa: 15403 sequences, 518113172 bp => dividing into 100 parts .................................................................................................... OK
+: All done, 22 seconds elapsed
+
+
+#+COMMENT: Set up MAKER for a genome
+#+HEADER: :shebang #!/bin/bash
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name)
+  swsetup () 
+  { 
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup maker
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+  while read -a lib; do
+    GENOME=$DIR/$(dirname ${lib[1]})/${lib[0]}.filtered.fa
+    SNAP_HMM=$DIR/analysis/annotation/busco/run_${lib[0]}/snap/${lib[0]}.hmm
+    GENEMARK=$DIR/analysis/annotation/genemark/${lib[0]}/output/gmhmm.mod
+    PROTEINS=$DIR/db/uniprot_sprot.fasta
+    ESTs=$DIR/analysis/rnaseq_assembly/trinity/${lib[0]}/trinity_out_dir/Trinity.fasta
+    AUGUSTUS_CONFIG_PATH=$DIR/analysis/annotation/busco/augustus_setup/config
+  
+    echo $GENOME
+    mkdir -p $DIR/analysis/annotation/maker/${lib[0]}/annotation_parts
+    cd $DIR/analysis/annotation/maker/${lib[0]}
+    pwd
+    maker -CTL
+    sed -i -e "s|gmhmm= #GeneMark|gmhmm=$GENEMARK #GeneMark|g" maker_opts.ctl
+    sed -i -e "s|gmhmme3= #location|gmhmme3=\/usr\/local\/igbb\/genemark-es-et_4.30\/gmhmme3 #location|g" maker_exe.ctl
+    sed -i -e "s|probuild= #location|probuild=\/usr\/local\/igbb\/genemark-es-et_4.30\/probuild #location|g" maker_exe.ctl
+    sed -i -e "s|protein=  #protein|protein=$PROTEINS #protein|g" maker_opts.ctl
+    sed -i -e "s|augustus_species=|augustus_species=${lib[0]} --AUGUSTUS_CONFIG_PATH=$AUGUSTUS_CONFIG_PATH|g" maker_opts.ctl
+    sed -i -e "s|snaphmm= #SNAP|snaphmm=$SNAP_HMM #SNAP|g" maker_opts.ctl
+    sed -i -e "s|est= #set|est=$ESTs #set|g" maker_opts.ctl
+  done <<< "$genomes";
+#+END_SRC
+
+** maker
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/maker/run.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N maker -l walltime=48:00:00 -l nodes=1:ppn=20 -q q200p48h -r n -m a -V
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name)
+  swsetup () 
+  { 
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup maker 
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+  if [ -z "$line" ]; then exit; fi
+  read -a line_lib < <(sed "${line}q;d" <<< "$genomes")
+  echo ${line_lib[0]}
+  cd $DIR/analysis/annotation/maker/${line_lib[0]}
+  read -a lib < <(sed -n -e "${PBS_ARRAYID}p" <<<"$(ls $DIR/analysis/annotation/split_genomes/${line_lib[0]} -1)")
+  maker -fix_nucleotides -g $DIR/analysis/annotation/split_genomes/${line_lib[0]}/$lib -c 20 &> maker.${PBS_ARRAYID}.log
+  cd ${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})".maker.output"
+  file_name=${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})"_master_datastore_index.log"
+  archive_name=${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})".maker.output.tar"
+  gff3_merge -d $file_name
+  fasta_merge -d $file_name
+  mv *.all* ../annotation_parts
+  cd ../
+  tar cf $archive_name ${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})".maker.output" --remove-files
+#+END_SRC
+** set up gff for autoaug
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var autoaug_species="kokia_autoaug" :results output verbatim
+swsetup()
+{
+  eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+}
+swsetup maker
+export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+swsetup snap
+cd $DIR/analysis/annotation/maker/kokia
+rm merged.log
+for file in $(ls -d *part*/)
+do
+	file_name_base=$(echo $file | rev | cut -f3- -d'.' | rev)
+	file_name=$file_name_base"_master_datastore_index.log"
+	awk -v OFS='\t' -v PWD="$file" '{print $1,PWD $2,$3}' $file/$file_name >> merged.log
+done
+
+gff3_merge -d merged.log
+mkdir snap
+cd snap
+maker2zff -c 0 -e 0 ../merged.log.all.gff
+fathom genome.ann genome.dna -categorize 1000
+fathom -export 1000 -plus uni.ann uni.dna
+forge export.ann export.dna
+hmm-assembler.pl snap . > ../../maker1.snap.hmm
+mkdir ../autoaug
+zff2gff3.pl genome.ann | perl -plne 's/\t(\S+)$/\t\.\t$1/' >genome.gff3
+mv genome.gff3 ../autoaug
+cd ../autoaug
+cp -r /usr/local/igbb/augustus/config ./
+mkdir config/species/$autoaug_species
+ln -s /usr/local/igbb/augustus/bin bin
+ln -s /usr/local/igbb/augustus/bin src
+ln -s /usr/local/igbb/augustus/scripts scripts
+#+END_SRC
+
+#+RESULTS:
+
+
+** autoaug
+
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name)
+cd $DIR/analysis/annotation/maker/$species/autoaug
+cp -r /usr/local/igbb/augustus/config ./
+ln -s /usr/local/igbb/augustus/bin bin
+ln -s /usr/local/igbb/augustus/bin src
+#+END_SRC
+
+#+RESULTS:
+
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/maker/kokia/autoaug/train.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N train_augustus -l walltime=48:00:00 -l nodes=1:ppn=20 -q q200p48h -r n -m a -V
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var autoaug_species="kokia"
+  swsetup()
+  {
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup boost-155
+  swsetup maker
+  swsetup snap
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/ 
+  cd $DIR/analysis/annotation/maker/kokia
+  mkdir snap
+  cd snap
+  maker2zff -c 0 -e 0 ../annotation_parts/kokia.gff
+  fathom genome.ann genome.dna -categorize 1000
+  fathom -export 1000 -plus uni.ann uni.dna
+  forge export.ann export.dna
+  hmm-assembler.pl snap . > ../kokia.snap.hmm
+  mkdir ../autoaug
+  zff2gff3.pl genome.ann | perl -plne 's/\t(\S+)$/\t\.\t$1/' > genome.gff3
+  mv genome.gff3 ../autoaug
+  cd ../autoaug
+  cp -r /usr/local/igbb/augustus/config ./
+  mkdir config/species/$autoaug_species
+  ln -s /usr/local/igbb/augustus/bin bin
+  ln -s /usr/local/igbb/augustus/bin src
+  export AUGUSTUS_CONFIG_PATH=$DIR/analysis/annotation/maker/kokia/autoaug/config
+  scripts/autoAug.pl --genome=$DIR/analysis/assemble/abyss/kokia/kokia.filtered.fa --species=$autoaug_species --threads=20 --trainingset=genome.gff3 --singleCPU -v --useexisting
+  
+#+END_SRC
+** set up maker 2
+#+COMMENT: Set up MAKER for a genome
+#+HEADER: :shebang #!/bin/bash
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name)
+  swsetup () 
+  { 
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup maker
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+  while read -a lib; do
+    GENOME=$DIR/$(dirname ${lib[1]})/${lib[0]}.filtered.fa
+    SNAP_HMM=$DIR/analysis/annotation/maker/${lib[0]}/${lib[0]}.snap.hmm
+    GENEMARK=$DIR/analysis/annotation/genemark/${lib[0]}/output/gmhmm.mod
+    PROTEINS=$DIR/db/uniprot_sprot.fasta
+    ESTs=$DIR/analysis/rnaseq_assembly/trinity/${lib[0]}/trinity_out_dir/Trinity.fasta
+    AUGUSTUS_CONFIG_PATH=$DIR/analysis/annotation/maker/${lib[0]}/autoaug/config
+  
+    echo $GENOME
+    mkdir -p $DIR/analysis/annotation/maker_2/${lib[0]}/annotation_parts
+    cd $DIR/analysis/annotation/maker_2/${lib[0]}
+    pwd
+    maker -CTL
+    sed -i -e "s|gmhmm= #GeneMark|gmhmm=$GENEMARK #GeneMark|g" maker_opts.ctl
+    sed -i -e "s|gmhmme3= #location|gmhmme3=\/usr\/local\/igbb\/genemark-es-et_4.30\/gmhmme3 #location|g" maker_exe.ctl
+    sed -i -e "s|probuild= #location|probuild=\/usr\/local\/igbb\/genemark-es-et_4.30\/probuild #location|g" maker_exe.ctl
+    sed -i -e "s|protein=  #protein|protein=$PROTEINS #protein|g" maker_opts.ctl
+    sed -i -e "s|augustus_species=|augustus_species=${lib[0]} --AUGUSTUS_CONFIG_PATH=$AUGUSTUS_CONFIG_PATH|g" maker_opts.ctl
+    sed -i -e "s|snaphmm= #SNAP|snaphmm=$SNAP_HMM #SNAP|g" maker_opts.ctl
+    sed -i -e "s|est= #set|est=$ESTs #set|g" maker_opts.ctl
+  done <<< "$genomes";
+#+END_SRC
+
+#+RESULTS:
+| /work/thrash/shane.kokia//analysis/assemble/abyss/kokia/kokia.filtered.fa |
+| /work/thrash/shane.kokia/analysis/annotation/maker_2/kokia                |
+
+** maker 2
+#+HEADER: :shebang #!/bin/bash :tangle analysis/annotation/maker_2/run.pbs :mkdirp yes
+#+HEADER: :prologue #PBS -N maker -l walltime=48:00:00 -l nodes=1:ppn=20 -q q200p48h -r n -m a -V
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name)
+  swsetup () 
+  { 
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup maker 
+  export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+  if [ -z "$line" ]; then exit; fi
+  read -a line_lib < <(sed "${line}q;d" <<< "$genomes")
+  echo ${line_lib[0]}
+  cd $DIR/analysis/annotation/maker_2/${line_lib[0]}
+  read -a lib < <(sed -n -e "${PBS_ARRAYID}p" <<<"$(ls $DIR/analysis/annotation/split_genomes/${line_lib[0]} -1)")
+  maker -fix_nucleotides -g $DIR/analysis/annotation/split_genomes/${line_lib[0]}/$lib -c 20 &> maker.${PBS_ARRAYID}.log
+  cd ${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})".maker.output"                                                                                                                                                                                        
+  file_name=${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})"_master_datastore_index.log"                                                                                                                                                                   
+  archive_name=${line_lib[0]}".filtered.part-"$(printf "%03d" ${PBS_ARRAYID})".maker.output.tar"                                                                                                                                                                          
+  gff3_merge -d $file_name                                                                                                                                                                                                                                                
+  fasta_merge -d $file_name                                                                                                                                                                                                                                               
+  mv *.all* ../annotation_parts                                                                                                                                                                                                                                           
+  cd ../ 
+#+END_SRC
+** produce gff/fasta
+#+BEGIN_SRC sh :var DIR=(file-name-directory buffer-file-name) :var autoaug_species="kirkii_autoaug" :results output verbatim
+swsetup()
+{
+  eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+}
+swsetup maker
+export PERL5LIB=$PERL5LIB:/usr/local/igbb/maker/lib/perl5/  
+swsetup snap
+cd $DIR/analysis/annotation/maker_2/kokia
+rm merged.log
+for file in $(ls -d *part*/)
+do
+	file_name_base=$(echo $file | rev | cut -f3- -d'.' | rev)
+	file_name=$file_name_base"_master_datastore_index.log"
+	awk -v OFS='\t' -v PWD="$file" '{print $1,PWD $2,$3}' $file/$file_name >> merged.log
+done
+
+gff3_merge -d merged.log
+fasta_merge -d merged.log
+#+END_SRC
+
+#+RESULTS:
+
+** AED Graph
+#+COMMENT: AED graph for maker annotations
+#+HEADER: :tangle analysis/annotation/annotations/aed.R :mkdirp yes
+#+BEGIN_SRC R
+args = commandArgs(trailingOnly=TRUE)
+data <- read.table(args[1])
+name <- args[2]
+library(ggplot2)
+ggplot(data, aes(V1))+stat_ecdf(geom="line")
+ggsave(paste(name,".aed.png", sep=""))
+#+END_SRC
+
+#+COMMENT: generate AED graphs
+#+HEADER: :shebang #!/bin/bash
+#+BEGIN_SRC sh :var genomes=genome_paths :var DIR=(file-name-directory buffer-file-name)
+  swsetup()
+  {
+    eval `/usr/erc-share/etc/swsetup/swsetup.pl $*`
+  }
+  swsetup r-3.2.1
+  cd $DIR/analysis/annotation/annotations/
+  for file in $(ls -1 *.gff); do
+    echo $file
+    awk '$2 == "maker"' $file > aed.gff
+    sed -e 's/.*_eAED=//' -e 's/;.*//' aed.gff > aed.stats
+    Rscript --vanilla aed.R aed.stats ${file%.*}
+    #rm aed.gff
+    #rm aed.stats
+  done;
+#+END_SRC
+
+#+RESULTS:
+: kokia.gff
