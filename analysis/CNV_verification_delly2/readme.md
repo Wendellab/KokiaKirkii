@@ -21,9 +21,9 @@ two warnings were manually checked, and do not overlap genes, i.e.,
 
 `bedtools intersect -nonamecheck -wo -a Dgenome2_13.exons.gff -b Gk.INS.bed | cut -f1,9,13 | sed '/WARNING/d' | sed 's/__.__.//g' | sed 's/__..__.//g' | awk ' ($3+1)%3!=0 { print } ' | cut -f2 | sort | uniq > Gk.disrupt.ins`
 
-### number of unique genes with: disruptive deletions = 1011   or    disruptive insertions = 202
-### number of unique genes disrupted = 1207
-number of gene deletions suggested by OrthoFinder = 2957 (includes possible whole gene deletions)
+### number of unique genes with: disruptive deletions = 1011   or    disruptive insertions = 202  
+### number of unique genes disrupted = 1207  
+number of gene deletions suggested by OrthoFinder = 2957 (includes possible whole gene deletions)  
 number of gene deletions verified by gmap = 1156 (out of 2144 checked) --> corresponds to 1594 total
 
 
@@ -34,8 +34,8 @@ number of gene deletions verified by gmap = 1156 (out of 2144 checked) --> corre
 
 `bedtools intersect -nonamecheck -wo -a Dgenome2_13.exons.gff -b Kokia.INS.bed | cut -f1,9,13 | sed '/WARNING/d' | sed 's/__.__.//g' | sed 's/__..__.//g' | awk ' ($3+1)%3!=0 { print } ' | cut -f2 | sort | uniq > Kok.disrupt.ins`
 
-### number of unique genes with deletions = 1426   or    disruptive insertions = 374
-### number of unique genes disrupted = 1783
-number of gene deletions suggested by OrthoFinder = 2008 (includes possible whole gene deletions)
+### number of unique genes with deletions = 1426   or    disruptive insertions = 374  
+### number of unique genes disrupted = 1783  
+number of gene deletions suggested by OrthoFinder = 2008 (includes possible whole gene deletions)  
 number of gene deletions verified by gmap = 944 (out of 1458 checked) --> corresponds to 1300 total
 
