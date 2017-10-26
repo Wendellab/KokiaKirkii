@@ -1,8 +1,8 @@
 
 ### Make the gff into bed, because bedtools hates this gff format
-`awk '{ print $1, $2, $2-1+length($4) }' Gk.DEL.pass.vcf | sed '/#/d' > Gk.DEL.bed` 
+`awk '{ print $1, $2, $2-1+length($4) }' Gk.DEL.pass.vcf | sed '/#/d' | sed 's/ /\t/g' > Gk.DEL.bed` 
 
-`awk '{ print $1, $2, $2-1+length($4) }' Kokia.DEL.pass.vcf | sed '/#/d' > Kokia.DEL.bed`
+`awk '{ print $1, $2, $2-1+length($4) }' Kokia.DEL.pass.vcf | sed '/#/d' | sed 's/ /\t/g' > Kokia.DEL.bed`
 
 
 ### intersect the gff of primary transcript exons with the deletions file  
