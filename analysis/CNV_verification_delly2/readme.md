@@ -7,13 +7,11 @@
 > extract chromosome, gene name  
 > two warnings were manually checked, and do not overlap genes, i.e.,  
 
-WARNING: File Gk.DEL.bed has a record where naming convention (leading zero) is inconsistent with other files:
-
+WARNING: File Gk.DEL.bed has a record where naming convention (leading zero) is inconsistent with other files:  
 Chr10   37651   37707
 
 
-WARNING: File Kokia.DEL.bed has a record where naming convention (leading zero) is inconsistent with other files:
-
+WARNING: File Kokia.DEL.bed has a record where naming convention (leading zero) is inconsistent with other files:  
  Chr10   37565   37585
 
 
