@@ -2,10 +2,11 @@
 
 
 
->>> intersect the gff of primary transcript exons with the deletions file
->> pipe out only exons that contain a deletion
->> extract chromosome, gene name 
->> two warnings were manually checked, and do not overlap genes, i.e.,
+> intersect the gff of primary transcript exons with the deletions file
+> pipe out only exons that contain a deletion
+> extract chromosome, gene name 
+> two warnings were manually checked, and do not overlap genes, i.e.,
+
 WARNING: File Gk.DEL.bed has a record where naming convention (leading zero) is inconsistent with other files:
 
 Chr10   37651   37707
