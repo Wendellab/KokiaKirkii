@@ -1,8 +1,8 @@
 
 ### Make the gff into bed, because bedtools hates this gff format
-`awk '{ print $1, $2, $2-1+length($4) }' Gk.DEL.pass.vcf > Gk.DEL.bed` 
+`awk '{ print $1, $2, $2-1+length($4) }' Gk.DEL.pass.vcf | sed '/#/d' > Gk.DEL.bed` 
 
-`awk '{ print $1, $2, $2-1+length($4) }' Kokia.DEL.pass.vcf > Kokia.DEL.bed`
+`awk '{ print $1, $2, $2-1+length($4) }' Kokia.DEL.pass.vcf | sed '/#/d' > Kokia.DEL.bed`
 
 
 ### intersect the gff of primary transcript exons with the deletions file  
@@ -29,7 +29,7 @@ number of gene deletions verified by gmap = 1156
 
 # _K. drynarioides_
 
-`bedtools intersect -wo -a Dgenome2_13.exons.gff -b Kokia.DEL.bed | cut -f1,9,13 | sed '/WARNING/d' | sed '/#/d' | sed 's/__.__.//g' | sed 's/__..__.//g' | awk ' ($3+1)%3!=0 { print } ' | cut -f2 | sort | uniq | wc -l`
+`bedtools intersect -wo -a Dgenome2_13.exons.gff -b Kokia.DEL.bed | cut -f1,9,13 | sed '/WARNING/d' | sed 's/__.__.//g' | sed 's/__..__.//g' | awk ' ($3+1)%3!=0 { print } ' | cut -f2 | sort | uniq | wc -l`
 
 ### number of unique genes with deletions = 1887
 number of gene deletions suggested by OrthoFinder = 2008 (includes possible whole gene deletions)
